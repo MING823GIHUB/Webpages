@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>114年度 總統盃AI素養爭霸賽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: The SPA is designed as a single-page, top-down narrative to guide users (students, teachers) from general to specific information. It starts with a broad overview (Hero), explains the "Why" (Goals), clarifies the "Who" (Eligibility), details the "How" (Process Flow), visualizes the "When" (Interactive Timeline Chart), showcases the "What for" (Prizes), and ends with clear calls to action (Links). This logical flow is more intuitive for potential participants than the original report's formal structure, making key information like dates and requirements easier to find and digest. Interactive elements like the clickable process diagram and timeline chart are designed to actively engage the user in exploring the competition schedule. -->
+    <!-- Visualization & Content Choices: 
+        1. Goals: To inform about the competition's purpose. Method: Styled text with Unicode icons. Justification: More visually engaging than a simple bulleted list.
+        2. Eligibility: To organize and inform about the different participation groups. Method: Four distinct info cards using HTML/Tailwind. Interaction: Hover effects to provide feedback. Justification: Clearly separates the groups for easy identification.
+        3. Process Flow: To organize the steps to participation. Method: A step-by-step diagram built with HTML/Tailwind. Interaction: Clickable steps that reveal detailed information. Justification: Transforms a linear list of tasks into an interactive, user-controlled discovery process.
+        4. Timeline: To visualize and allow comparison of key competition periods. Method: A Chart.js horizontal bar chart. Interaction: Tooltips on hover provide exact date ranges. Justification: Provides a quick, visual overview of the entire competition schedule from June to November, making it easier to grasp the timeframe than reading through text.
+        5. Prizes: To inform about the awards. Method: Styled text with Unicode medal icons. Justification: Adds visual appeal to the list of awards.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfcf9;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .step-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .step-content.active {
+            max-height: 200px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-teal-700">總統盃AI素養爭霸賽</h1>
+            <ul class="hidden md:flex space-x-6">
+                <li><a href="#about" class="hover:text-teal-600 transition-colors">關於競賽</a></li>
+                <li><a href="#eligibility" class="hover:text-teal-600 transition-colors">參賽資格</a></li>
+                <li><a href="#process" class="hover:text-teal-600 transition-colors">參賽流程</a></li>
+                <li><a href="#timeline" class="hover:text-teal-600 transition-colors">重要時程</a></li>
+                <li><a href="#prizes" class="hover:text-teal-600 transition-colors">競賽獎勵</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <section class="text-center mb-16 md:mb-24">
+            <h2 class="text-4xl md:text-6xl font-bold text-stone-900 leading-tight">114年度<br class="md:hidden"><span class="text-teal-600">總統盃AI素養爭霸賽</span></h2>
+            <p class="mt-4 text-lg md:text-xl text-stone-600 max-w-3xl mx-auto">一個為全國中小學生設計的AI競技舞台，旨在激發你的創造力、邏輯力與解決問題的能力。</p>
+            <a href="https://proj.moe.edu.tw/Ai-literacy/" target="_blank" class="mt-8 inline-block bg-teal-600 text-white font-bold py-3 px-8 rounded-full hover:bg-teal-700 transition-transform hover:scale-105 shadow-lg">
+                前往官方網站
+            </a>
+        </section>
+
+        <section id="about" class="mb-16 md:mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-stone-900">競賽目標</h3>
+                <p class="mt-2 text-stone-600">我們希望透過這個競賽，達成以下目標：</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200/80">
+                    <div class="text-4xl mb-3">🧠</div>
+                    <h4 class="text-xl font-bold mb-2">提升邏輯與創作力</h4>
+                    <p class="text-stone-600">學習AI程式設計思維，提升邏輯思考及動手創作的能力。</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200/80">
+                    <div class="text-4xl mb-3">💡</div>
+                    <h4 class="text-xl font-bold mb-2">激發解決問題能力</h4>
+                    <p class="text-stone-600">結合遊戲熟悉AI架構，激發學生運用AI解決實際問題的能力。</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200/80">
+                    <div class="text-4xl mb-3">🤝</div>
+                    <h4 class="text-xl font-bold mb-2">促進交流與參與</h4>
+                    <p class="text-stone-600">鼓勵跨校與城鄉交流，特別邀請偏鄉師生共同參與，拓展視野。</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200/80">
+                    <div class="text-4xl mb-3">🚀</div>
+                    <h4 class="text-xl font-bold mb-2">儲備未來競爭力</h4>
+                    <p class="text-stone-600">透過競賽實作，為台灣儲備下一代的AI科技人才。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="eligibility" class="mb-16 md:mb-24 scroll-mt-20">
+             <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-stone-900">誰可以參加？</h3>
+                <p class="mt-2 text-stone-600">競賽分為四個組別，每隊由2名學生及1位指導老師組成。</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-teal-50 border-l-4 border-teal-500 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold text-teal-800">國小一般組</h4>
+                    <p class="text-teal-700 mt-1">全國一般地區國小3-6年級學生。</p>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold text-amber-800">國小偏鄉組</h4>
+                    <p class="text-amber-700 mt-1">教育部認定之偏遠地區國小3-6年級學生。</p>
+                </div>
+                <div class="bg-teal-50 border-l-4 border-teal-500 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold text-teal-800">國中一般組</h4>
+                    <p class="text-teal-700 mt-1">全國一般地區國中7-9年級學生。</p>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold text-amber-800">國中偏鄉組</h4>
+                    <p class="text-amber-700 mt-1">教育部認定之偏遠地區國中7-9年級學生。</p>
+                </div>
+            </div>
+             <p class="text-center mt-6 text-stone-600">注意：每位學生限報名一隊，且不得跨校、跨縣市組隊。</p>
+        </section>
+        
+        <section id="process" class="mb-16 md:mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-stone-900">參賽流程</h3>
+                <p class="mt-2 text-stone-600">從組隊到決賽，跟著以下四個步驟，一步步邁向全國舞台！點擊步驟查看詳細資訊。</p>
+            </div>
+            <div class="relative w-full max-w-4xl mx-auto">
+                <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-stone-200" aria-hidden="true"></div>
+                <div class="space-y-4">
+                    <div class="step-container">
+                        <div class="step-header flex items-center gap-4 cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex-shrink-0 w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-bold">1</div>
+                            <h4 class="text-xl font-semibold">組隊與縣市選拔</h4>
+                        </div>
+                        <div class="step-content ml-16 text-stone-600">
+                            <p>首先，找到一位隊友和指導老師，並留意您所在縣市教育局(處)的公告，參加縣市選拔賽。這是通往全國賽的第一關！</p>
+                            <p class="font-semibold mt-2">時間：114年6月 至 9月</p>
+                        </div>
+                    </div>
+                     <div class="step-container">
+                        <div class="step-header flex items-center gap-4 cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex-shrink-0 w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-bold">2</div>
+                            <h4 class="text-xl font-semibold">全國競賽報名</h4>
+                        </div>
+                        <div class="step-content ml-16 text-stone-600">
+                            <p>恭喜從縣市賽脫穎而出！各縣市將統一為代表隊伍進行全國賽報名。</p>
+                            <p class="font-semibold mt-2">時間：114年10月20日 至 10月31日</p>
+                        </div>
+                    </div>
+                     <div class="step-container">
+                        <div class="step-header flex items-center gap-4 cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex-shrink-0 w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-bold">3</div>
+                            <h4 class="text-xl font-semibold">AI模型訓練與上傳</h4>
+                        </div>
+                        <div class="step-content ml-16 text-stone-600">
+                            <p>所有隊伍將在全國指定的同一天、同一時段，於各縣市會場進行AI模型訓練並上傳作品，考驗您的實戰能力。</p>
+                            <p class="font-semibold mt-2">時間：114年11月17日 (13:00 - 16:00)</p>
+                        </div>
+                    </div>
+                     <div class="step-container">
+                        <div class="step-header flex items-center gap-4 cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex-shrink-0 w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-bold">4</div>
+                            <h4 class="text-xl font-semibold">決賽暨頒獎典禮</h4>
+                        </div>
+                        <div class="step-content ml-16 text-stone-600">
+                            <p>最終決戰！全國隊伍齊聚臺南，一較高下。當天也將舉行盛大的頒獎典禮，表揚優秀隊伍。</p>
+                            <p class="font-semibold mt-2">時間：114年11月28日</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline" class="mb-16 md:mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-stone-900">競賽時程總覽</h3>
+                <p class="mt-2 text-stone-600">這張圖表讓您快速掌握114年度競賽的整體時間規劃。</p>
+            </div>
+            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-stone-200/80">
+                <div class="chart-container">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="prizes" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-stone-900">競賽獎勵</h3>
+                <p class="mt-2 text-stone-600">您的努力將獲得肯定！優勝隊伍將獲頒以下榮譽：</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                <div class="bg-amber-100 p-6 rounded-lg">
+                    <div class="text-4xl mb-2">🥇</div>
+                    <h4 class="text-2xl font-bold text-amber-700">金獎</h4>
+                    <p class="text-amber-600">總統府獎狀</p>
+                </div>
+                <div class="bg-stone-200 p-6 rounded-lg">
+                    <div class="text-4xl mb-2">🥈</div>
+                    <h4 class="text-2xl font-bold text-stone-600">銀獎</h4>
+                    <p class="text-stone-500">總統府獎狀</p>
+                </div>
+                 <div class="bg-orange-200 p-6 rounded-lg">
+                    <div class="text-4xl mb-2">🥉</div>
+                    <h4 class="text-2xl font-bold text-orange-700">銅獎</h4>
+                    <p class="text-orange-600">總統府獎狀</p>
+                </div>
+                 <div class="bg-sky-100 p-6 rounded-lg">
+                    <div class="text-4xl mb-2">🏅</div>
+                    <h4 class="text-2xl font-bold text-sky-700">佳作</h4>
+                    <p class="text-sky-600">教育部獎狀</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-white mt-16 md:mt-24">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h3 class="text-2xl font-bold">準備好接受挑戰了嗎？</h3>
+            <p class="mt-2 max-w-2xl mx-auto">立即前往官方網站，查看最完整的競賽細則與教學資源，開始您的AI學習之旅！</p>
+            <div class="mt-6 flex justify-center gap-4">
+                 <a href="https://proj.moe.edu.tw/Ai-literacy/" target="_blank" class="bg-teal-600 text-white font-bold py-3 px-6 rounded-full hover:bg-teal-500 transition-colors">
+                    競賽官網
+                </a>
+                 <a href="https://www.programtheworld.tw/ai_competition" target="_blank" class="bg-stone-700 text-white font-bold py-3 px-6 rounded-full hover:bg-stone-600 transition-colors">
+                    教學資源
+                </a>
+            </div>
+            <p class="mt-8 text-sm text-stone-400">&copy; 114年度總統盃AI素養爭霸賽 | 本頁面為資訊彙整，所有資訊以官方網站為準。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+            
+            const timelineData = {
+                labels: ['縣市選拔賽', '全國競賽報名', 'AI模型訓練與上傳', '決賽暨頒獎典禮'],
+                datasets: [{
+                    label: '競賽時程',
+                    data: [
+                        [5.5, 9.5], // June to September
+                        [9.66, 10.03], // Oct 20 to 31
+                        [10.53, 10.58], // Nov 17
+                        [10.9, 10.95] // Nov 28
+                    ],
+                    backgroundColor: [
+                        'rgba(13, 148, 136, 0.6)',
+                        'rgba(245, 158, 11, 0.6)',
+                        'rgba(217, 119, 6, 0.6)',
+                        'rgba(220, 38, 38, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(13, 148, 136, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(217, 119, 6, 1)',
+                        'rgba(220, 38, 38, 1)'
+                    ],
+                    borderWidth: 1,
+                    borderSkipped: false,
+                }]
+            };
+
+            const timelineConfig = {
+                type: 'bar',
+                data: timelineData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            min: 5,
+                            max: 11.5,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    const months = ['五月','六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+                                    return months[Math.floor(value-5)];
+                                },
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: '114年 (2025)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.raw;
+                                    let dateString = '';
+                                    switch (context.dataIndex) {
+                                        case 0: dateString = '6月至9月'; break;
+                                        case 1: dateString = '10/20 至 10/31'; break;
+                                        case 2: dateString = '11/17 (13:00-16:00)'; break;
+                                        case 3: dateString = '11/28'; break;
+                                    }
+                                    return `${context.label}: ${dateString}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(timelineCtx, timelineConfig);
+            
+            const stepHeaders = document.querySelectorAll('.step-header');
+            stepHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    
+                    const currentlyActive = document.querySelector('.step-content.active');
+                    if(currentlyActive && currentlyActive !== content) {
+                        currentlyActive.classList.remove('active');
+                    }
+                    
+                    content.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
