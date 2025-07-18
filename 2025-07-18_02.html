@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自動發文AI工作流</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light blue-gray background */
+            color: #334155; /* Dark slate text */
+        }
+        .container {
+            max-width: 800px;
+        }
+        /* Custom styling for rounded corners on all elements */
+        * {
+            border-radius: 0.5rem; /* Apply rounded corners universally */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8 lg:p-10">
+    <div class="container mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-8 md:p-10 lg:p-12 my-8">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-blue-800 mb-6 leading-tight">
+            終於做出來了！自動發文AI工作流
+        </h1>
+        <p class="text-lg sm:text-xl text-center text-gray-600 mb-8">
+            現在有很多創作者，如果你也感興趣，不妨往下看。
+        </p>
+
+        <div class="mb-10 p-6 bg-blue-50 rounded-lg shadow-inner">
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                今天做出來的自動發文AI，能把我的文章，轉成適合部落格的內容，安排到草稿裡，不過目前是半自動版本，距離完全自動還有一段路要走。
+            </p>
+            <h2 class="text-2xl sm:text-3xl font-bold text-blue-700 mb-4 flex items-center">
+                <span class="mr-2 text-blue-500">❖</span> 半自動版本：每篇節省10~20分鐘
+            </h2>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                FB文章跟部落格文章差很多，要搬過去真的很花時間，要改的內容有這些：
+            </p>
+
+            <ul class="list-none space-y-4 text-gray-700 text-base sm:text-lg">
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-xl mr-3">1.</span>
+                    <div>
+                        <strong class="text-blue-600">標題：</strong>
+                        FB文章會隨機推送，只要吸引人看下去就行。但部落格文章標題關乎有沒有人能搜尋到，以及是否想點進去看，側重點不一樣。
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-xl mr-3">2.</span>
+                    <div>
+                        <strong class="text-blue-600">文章排版：</strong>
+                        為了在FB觀看方便，我的段落通常較短，且換行頻繁。但部落格那樣就很怪，得重新調整。
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-xl mr-3">3.</span>
+                    <div>
+                        <strong class="text-blue-600">文章描述：</strong>
+                        在Google搜尋時會看到一段描述，為了讓使用者了解網頁內容，吸引他點進去。FB文章沒有這種東西，要額外寫。
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-xl mr-3">4.</span>
+                    <div>
+                        <strong class="text-blue-600">精選圖片：</strong>
+                        大部分文章我都有配圖，讓AI幫我加上去並不難，難在沒有配圖的文章得額外生圖。還有我的配圖不在雲端，放在本機，目前正在讓AI整理圖檔中，但碰到一些問題。
+                    </div>
+                </li>
+            </ul>
+            <p class="text-gray-700 mt-6 text-base sm:text-lg leading-relaxed">
+                以上四個是今天已經達成的功能，把文章原稿給AI，讓他幫我產出以上內容，再自動排到草稿就行。
+            </p>
+        </div>
+
+        <div class="mb-10 p-6 bg-green-50 rounded-lg shadow-inner">
+            <h2 class="text-2xl sm:text-3xl font-bold text-green-700 mb-4 flex items-center">
+                <span class="mr-2 text-green-500">🚀</span> 之後能擴充的
+            </h2>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                上傳草稿後，仍然要手動做以下的事：設定SEO關鍵字、SEO用目錄、文章分類、文章標籤。
+            </p>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                而且目前工作流並沒有SEO的加分，單純只把文章同步到部落格。
+            </p>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                未來要加分，勢必得讓AI選擇適合的SEO關鍵字，並進行部分改寫。同時，還得跟網站裡其他關鍵字互補，提升網站整體的SEO效益。
+            </p>
+            <p class="text-gray-700 text-base sm:text-lg leading-relaxed">
+                不過，這難度已經不單是建構工作流，而是同時得對SEO技術足夠了解，目前這部分我還得學習。
+            </p>
+        </div>
+
+        <div class="mb-10 p-6 bg-purple-50 rounded-lg shadow-inner">
+            <h2 class="text-2xl sm:text-3xl font-bold text-purple-700 mb-4 flex items-center">
+                <span class="mr-2 text-purple-500">🌐</span> 很多人都在全自動經營
+            </h2>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                上網查相關影片或模板，就能看到很多這類工作流，甚至是收費代建的。
+            </p>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                我做的目前只發到wordpress上，但其他人是發布到多個社群平台，甚至自動製作影片到Youtube。而這些都不難，難在需要時間搭建，以及擁有值得分享的內容。
+            </p>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                當然，還有人是自動讓AI搜尋新聞，或AI擬定主題，然後全自動撰寫與刊登。
+            </p>
+            <p class="text-gray-700 text-base sm:text-lg leading-relaxed">
+                之後我或許也會開一個獨立分類，用來製作這類的內容，實驗一下效果如何。
+            </p>
+        </div>
+
+        <div class="p-6 bg-yellow-50 rounded-lg shadow-inner">
+            <h2 class="text-2xl sm:text-3xl font-bold text-yellow-700 mb-4 flex items-center">
+                <span class="mr-2 text-yellow-500">💡</span> 你能做些什麼
+            </h2>
+            <p class="text-gray-700 mb-4 text-base sm:text-lg leading-relaxed">
+                各種千奇百怪的工作流都有人做，但最重要的是「自己到底需要什麼」。
+            </p>
+            <p class="text-gray-700 mb-6 text-base sm:text-lg leading-relaxed">
+                你能根據現在的階段，來決定該做些什麼。
+            </p>
+
+            <ul class="list-none space-y-6 text-gray-700 text-base sm:text-lg">
+                <li class="flex items-start">
+                    <span class="text-yellow-600 font-bold text-xl mr-3">●</span>
+                    <div>
+                        <strong class="text-yellow-700">目前沒有內容：</strong>
+                        如果你覺得這個很酷很實用，但沒有什麼能發的內容，可以先找到自己想經營的主題，或是反過來，找到市場上有價值的主題，然後產出內容，或是給AI產出。
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-yellow-600 font-bold text-xl mr-3">●</span>
+                    <div>
+                        <strong class="text-yellow-700">已經有內容，但覺得困難不敢做：</strong>
+                        若你正在從事創作，覺得這很實用，但仍然對工作流不熟，甚至是抗拒。沒關係，這很正常，我也觀望很久，最初也是很遲疑，甚至學了一個多月，才挑戰我一直想做的這個AI自動發文。你能先把自己當成一人公司，妥善整理你的內容、圖檔，放在表格內或Notion內控管，未來一定會出現適合創作者使用的自動化工具，到時就能直接導入。為了讓自動化能讀取我的內容，我也重新調整了歸檔方式，而這些你能先做。
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-yellow-600 font-bold text-xl mr-3">●</span>
+                    <div>
+                        <strong class="text-yellow-700">想做，但不想用自動化：</strong>
+                        你能把文章丟給GPT或Gemini或你習慣的AI，讓他幫你重新排版、取標題、產出描述...等，再自己手動放到部落格。雖然比較耗時，但如果量不多仍然很方便。
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-yellow-600 font-bold text-xl mr-3">●</span>
+                    <div>
+                        <strong class="text-yellow-700">馬上就想做：</strong>
+                        我把自動化工具n8n的筆記放在留言裡，你能跟著循序漸進學習，裡面收錄我實際參考的影片，並且是篩選過，教學比較詳細或容易學習的。
+                    </div>
+                </li>
+            </ul>
+            <p class="text-gray-700 mt-6 text-base sm:text-lg leading-relaxed text-center font-semibold">
+                為了早一步體驗到AI生活，努力自己動手打造AI Agent中
+            </p>
+            <p class="text-gray-700 text-base sm:text-lg leading-relaxed text-center font-semibold">
+                用接地氣的方式，陪你在AI時代，找到屬於自己的生存之道，成為更美好的你。
+            </p>
+        </div>
+    </div>
+</body>
+</html>
