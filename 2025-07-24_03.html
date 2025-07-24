@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真實才有戲 - 互動式非虛構敘事指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony Neutrals -->
+    <!-- Application Structure Plan: The application is structured as a guided journey from theory to practice. It starts with the core philosophy ("Why"), introduces the main analytical tool ("What" - F-M-E framework) with an interactive chart, presents structural templates ("How" - Five-Step/Four-Panel methods), and culminates in an interactive case study section where users can apply the concepts. This structure facilitates progressive learning, allowing users to see how abstract concepts are applied to concrete examples, enhancing comprehension and retention. The navigation allows users to jump between sections freely, catering to both linear learners and those who wish to explore specific topics. -->
+    <!-- Visualization & Content Choices: 1. F-M-E Framework: Goal: Explain the core analytical tool. Viz: Interactive cards and a dynamic Radar Chart (Chart.js). Interaction: Clicking a case study updates the chart to show that story's F-M-E balance. Justification: Makes the abstract concept of story composition tangible and comparable. 2. Narrative Structures: Goal: Present the Five-Step and Four-Panel methods. Viz: Interactive diagrams built with HTML/CSS Flexbox. Interaction: Toggling between methods reveals their structure. Justification: More accessible and engaging than static images. 3. Case Studies: Goal: Demonstrate practical application. Viz: A filterable content area. Interaction: Selecting a case triggers updates to the F-M-E text and the radar chart. Justification: Creates a cohesive learning experience by linking examples directly to theoretical frameworks. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F8F7F2; /* Warm off-white */
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D68C45; /* Warm accent */
+            transform: translateY(-2px);
+        }
+        .btn-case.active {
+            background-color: #D68C45;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #D68C45, #8E5C4A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .structural-step {
+            transition: all 0.3s ease;
+        }
+        .structural-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-800">真實才有戲</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#philosophy" class="nav-link text-gray-600 font-medium">核心理念</a>
+                <a href="#fme-framework" class="nav-link text-gray-600 font-medium">F-M-E 框架</a>
+                <a href="#structures" class="nav-link text-gray-600 font-medium">敘事結構</a>
+                <a href="#case-studies" class="nav-link text-gray-600 font-medium">案例實踐</a>
+                <a href="#toolkit" class="nav-link text-gray-600 font-medium">故事庫工具</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Section 1: Core Philosophy -->
+        <section id="philosophy" class="text-center mb-20">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">把<span class="gradient-text">現場</span>煉成<span class="gradient-text">影響力</span></h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">有效的說故事，並非憑空捏造，而是深度參與、認真觀察與反思，將真實經驗轉化為動人敘事。這不僅是溝通技巧，更是領導力與自我認識的核心。</p>
+            <div class="bg-white p-8 rounded-2xl shadow-lg inline-flex items-center justify-center space-x-4 text-xl md:text-2xl font-semibold text-gray-700">
+                <span>真實</span>
+                <span class="text-amber-600 text-3xl font-mono">×</span>
+                <span>參與</span>
+                <span class="text-amber-600 text-3xl font-mono">×</span>
+                <span>反思</span>
+                <span class="text-amber-600 text-3xl font-mono">→</span>
+                <span class="gradient-text">動人故事</span>
+            </div>
+        </section>
+
+        <!-- Section 2: F-M-E Framework -->
+        <section id="fme-framework" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-3">F-M-E 分析框架</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">這是動人故事的煉金術。一個好的非虛構故事，是「真實事件(Fact) + 洞見升華(Meaning) + 情感共振(Emotion)」的完美結合。</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div id="fme-card-f" class="bg-white p-6 rounded-xl shadow-md mb-6 border-l-4 border-blue-400">
+                        <h3 class="text-2xl font-bold text-blue-600 mb-2">F - 事實 (Fact)</h3>
+                        <p class="text-gray-700">故事的骨架。具體的場景、角色、動作、數據，讓聽眾「看得見」事件的發生。</p>
+                        <p id="f-text" class="mt-3 text-gray-500 italic text-sm transition-all duration-300"></p>
+                    </div>
+                    <div id="fme-card-m" class="bg-white p-6 rounded-xl shadow-md mb-6 border-l-4 border-green-400">
+                        <h3 class="text-2xl font-bold text-green-600 mb-2">M - 意義 (Meaning)</h3>
+                        <p class="text-gray-700">故事的靈魂。事件為何重要、對誰有影響，將現象提升為洞見，避免流水帳。</p>
+                         <p id="m-text" class="mt-3 text-gray-500 italic text-sm transition-all duration-300"></p>
+                    </div>
+                    <div id="fme-card-e" class="bg-white p-6 rounded-xl shadow-md border-l-4 border-red-400">
+                        <h3 class="text-2xl font-bold text-red-600 mb-2">E - 情感 (Emotion)</h3>
+                        <p class="text-gray-700">故事的溫度。說故事者的感受、脆弱、驚喜，讓聽眾「感同身受」。</p>
+                         <p id="e-text" class="mt-3 text-gray-500 italic text-sm transition-all duration-300"></p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="fmeChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Narrative Structures -->
+        <section id="structures" class="mb-20">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-3">結構化敘事工具</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">好的內容需要好的骨架。選擇合適的結構，能讓你的故事更有層次與張力。</p>
+            </div>
+            <div class="flex justify-center mb-8">
+                <div class="bg-gray-200 p-1 rounded-full flex space-x-1">
+                    <button id="btn-five-step" class="px-6 py-2 rounded-full text-sm font-medium transition-colors">五步法</button>
+                    <button id="btn-four-panel" class="px-6 py-2 rounded-full text-sm font-medium transition-colors">四格法</button>
+                </div>
+            </div>
+            <!-- Five-Step Method -->
+            <div id="five-step-container">
+                <p class="text-center text-gray-600 mb-6">適用於鋪陳完整歷程與內在轉變，特別是「人物成長」類的故事。</p>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">起</h4><p class="text-sm text-gray-500">建立情境</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">承</h4><p class="text-sm text-gray-500">發展挑戰</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">轉</h4><p class="text-sm text-gray-500">衝突轉折</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">合</h4><p class="text-sm text-gray-500">呈現成果</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">省思</h4><p class="text-sm text-gray-500">提升深度</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Four-Panel Method -->
+            <div id="four-panel-container" class="hidden">
+                <p class="text-center text-gray-600 mb-6">適合聚焦在一件事的改變歷程，特別是「任務解決」類的故事。</p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                     <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">背景</h4><p class="text-sm text-gray-500">建立問題意識</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">衝突</h4><p class="text-sm text-gray-500">形成戲劇張力</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">行動</h4><p class="text-sm text-gray-500">突顯選擇努力</p>
+                    </div>
+                    <div class="structural-step bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-lg">成果</h4><p class="text-sm text-gray-500">呈現價值成效</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Case Studies -->
+        <section id="case-studies" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-3">案例實踐</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">點擊下方案例，看看理論如何應用於真實的校園故事中。觀察 F-M-E 圖表的變化！</p>
+            </div>
+            <div class="flex justify-center flex-wrap gap-3 mb-8">
+                <button class="btn-case px-5 py-2 bg-white rounded-full text-gray-700 font-medium transition-all" data-case="dog">校狗教會我們的事</button>
+                <button class="btn-case px-5 py-2 bg-white rounded-full text-gray-700 font-medium transition-all" data-case="bell">誰說鐘聲只有一種？</button>
+                <button class="btn-case px-5 py-2 bg-white rounded-full text-gray-700 font-medium transition-all" data-case="bank">故事銀行</button>
+                <button class="btn-case px-5 py-2 bg-white rounded-full text-gray-700 font-medium transition-all" data-case="math">小謙的數學故事</button>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg min-h-[200px]">
+                <h3 id="case-title" class="text-2xl font-bold mb-4 text-gray-800">請選擇一個案例</h3>
+                <p id="case-summary" class="text-gray-700 leading-relaxed">這裡將會顯示所選案例的摘要，並同步更新上方的 F-M-E 分析與圖表。</p>
+            </div>
+        </section>
+
+        <!-- Section 5: Toolkit -->
+        <section id="toolkit" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-3">建立你的故事庫</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">動人的故事源於日常觀察。試著每天問自己一個問題，長期累積，就能將零碎經驗轉化為寶貴的敘事資產。</p>
+            </div>
+            <div class="max-w-2xl mx-auto space-y-4">
+                <details class="bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-gray-800">今天最意外的一句話是什麼？誰說的？</summary>
+                    <p class="text-gray-600 mt-2 text-sm">目的：捕捉揭示真實情感或觀點衝突的對話。</p>
+                </details>
+                 <details class="bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-gray-800">我在哪裡看到「期待跟現實」差很大？</summary>
+                    <p class="text-gray-600 mt-2 text-sm">目的：觀察期望與實際的落差，這是故事衝突的常見來源。</p>
+                </details>
+                 <details class="bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-gray-800">我今天做了什麼小決定，可能會帶來影響？</summary>
+                    <p class="text-gray-600 mt-2 text-sm">目的：聚焦看似微小卻可能產生連鎖反應的決定，捕捉故事轉折點。</p>
+                </details>
+                 <details class="bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-gray-800">我改變了哪個想法？為什麼？</summary>
+                    <p class="text-gray-600 mt-2 text-sm">目的：探索個人觀念的轉變，這是「省思」的重要素材。</p>
+                </details>
+                 <details class="bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-gray-800">我還不確定、想再查證的是什麼？</summary>
+                    <p class="text-gray-600 mt-2 text-sm">目的：保持好奇心，確保故事的真實性，並為敘事提供更多素材。</p>
+                </details>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 border-t border-gray-200">
+        <p class="text-gray-500">基於「真實才有戲—說故事，非虛構」報告設計</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Data ---
+            const caseData = {
+                default: {
+                    title: '請選擇一個案例',
+                    summary: '這裡將會顯示所選案例的摘要，並同步更新上方的 F-M-E 分析與圖表。',
+                    fme: [3, 3, 3],
+                    fText: '點選案例以查看其「事實」細節。',
+                    mText: '點選案例以查看其「意義」詮釋。',
+                    eText: '點選案例以查看其「情感」表達。'
+                },
+                dog: {
+                    title: '校狗教會我們的事',
+                    summary: '校長將七隻校狗從管理難題，轉化為全校的生命教育契機，不僅成立學生志工隊，更制定了全國首份校狗章則，展現了化挑戰為機會的領導智慧。',
+                    fme: [5, 5, 4],
+                    fText: '事實：七隻校狗、管理問題、成立志工隊、制定校狗章則。',
+                    mText: '意義：將「麻煩」轉化為生命教育的「老師與家人」，建立制度解決問題。',
+                    eText: '情感：從無奈煩惱到感動驕傲，以及與師生共度的深厚情感。'
+                },
+                bell: {
+                    title: '誰說鐘聲只有一種？',
+                    summary: '面對學生抱怨鐘聲與鄰校混淆，校長並非簡單更換，而是結合美感教育，將鐘聲改為古典樂《幽默曲》，不僅解決問題，更提升了校園文化品味。',
+                    fme: [4, 5, 3],
+                    fText: '事實：學生抱怨鐘聲、校長決策、更換為德弗札克《幽默曲》。',
+                    mText: '意義：在解決管理問題時融入教育思維，能創造超越預期的價值。',
+                    eText: '情感：從學生的抱怨，到校長的巧思，再到全校的驚喜與讚賞。'
+                },
+                bank: {
+                    title: '故事銀行 Story Bank',
+                    summary: '新豐高中創立「故事銀行」，將真實的校園人物故事展示在故事牆並出版成冊，突破傳統獎勵機制的限制，傳達「每個人都值得被看見」的教育信念。',
+                    fme: [4, 5, 5],
+                    fText: '事實：創立故事銀行、公開展示故事、出版成冊、學生主動預購。',
+                    mText: '意義：打破傳統獎勵框架，肯定每個人的獨特價值，建立社群認同感。',
+                    eText: '情感：從不被看見的沉默，到成為主角的感動與自信，溫暖動人。'
+                },
+                math: {
+                    title: '小謙的數學故事',
+                    summary: '一位學生在數學不及格後，沒有放棄，而是主動留下來請教老師。這個看似微小的行動，成為他學習態度轉變的關鍵，最終成績大幅進步。',
+                    fme: [4, 4, 4],
+                    fText: '事實：小謙數學不及格、主動留校問問題、成績進步。',
+                    mText: '意義：「願意求助」是成長的轉捩點，展現了學生的韌性與主動性。',
+                    eText: '情感：從挫折、沮喪，到鼓起勇氣，最終獲得成就感與自信。'
+                }
+            };
+
+            // --- Chart.js Setup ---
+            const ctx = document.getElementById('fmeChart').getContext('2d');
+            const fmeChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['F (事實)', 'M (意義)', 'E (情感)'],
+                    datasets: [{
+                        label: '故事組成分析',
+                        data: caseData.default.fme,
+                        backgroundColor: 'rgba(214, 140, 69, 0.2)',
+                        borderColor: 'rgba(214, 140, 69, 1)',
+                        pointBackgroundColor: 'rgba(214, 140, 69, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(214, 140, 69, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { font: { size: 14 } },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: {
+                                stepSize: 1,
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+
+            // --- DOM Elements ---
+            const caseButtons = document.querySelectorAll('.btn-case');
+            const caseTitle = document.getElementById('case-title');
+            const caseSummary = document.getElementById('case-summary');
+            const fText = document.getElementById('f-text');
+            const mText = document.getElementById('m-text');
+            const eText = document.getElementById('e-text');
+            
+            // --- Functions ---
+            function updateDisplay(caseKey) {
+                const data = caseData[caseKey] || caseData.default;
+
+                // Update text content
+                caseTitle.textContent = data.title;
+                caseSummary.textContent = data.summary;
+                fText.textContent = data.fText;
+                mText.textContent = data.mText;
+                eText.textContent = data.eText;
+
+                // Update chart
+                fmeChart.data.datasets[0].data = data.fme;
+                fmeChart.update();
+
+                // Update active button
+                caseButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.case === caseKey);
+                });
+            }
+
+            // --- Event Listeners ---
+            caseButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const caseKey = button.dataset.case;
+                    updateDisplay(caseKey);
+                });
+            });
+
+            // Structure toggle
+            const btnFiveStep = document.getElementById('btn-five-step');
+            const btnFourPanel = document.getElementById('btn-four-panel');
+            const fiveStepContainer = document.getElementById('five-step-container');
+            const fourPanelContainer = document.getElementById('four-panel-container');
+
+            function setActiveStructure(activeBtn, inactiveBtn, activeContainer, inactiveContainer) {
+                activeBtn.classList.add('bg-white', 'text-gray-800', 'shadow-sm');
+                activeBtn.classList.remove('text-gray-500');
+                inactiveBtn.classList.remove('bg-white', 'text-gray-800', 'shadow-sm');
+                inactiveBtn.classList.add('text-gray-500');
+                activeContainer.classList.remove('hidden');
+                inactiveContainer.classList.add('hidden');
+            }
+            
+            btnFiveStep.addEventListener('click', () => {
+                setActiveStructure(btnFiveStep, btnFourPanel, fiveStepContainer, fourPanelContainer);
+            });
+            btnFourPanel.addEventListener('click', () => {
+                setActiveStructure(btnFourPanel, btnFiveStep, fourPanelContainer, fiveStepContainer);
+            });
+            
+            // Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // --- Initial State ---
+            updateDisplay('default');
+            setActiveStructure(btnFiveStep, btnFourPanel, fiveStepContainer, fourPanelContainer);
+        });
+    </script>
+</body>
+</html>
