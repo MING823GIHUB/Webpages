@@ -5,3 +5,4 @@
 ## https://ming823gihub.github.io/Webpages/2025-07-18_02.html
 # 東港迎王七角頭職司歷史資訊圖表
 ## https://ming823gihub.github.io/Webpages/2025-07-24.html
+## https://ming823gihub.github.io/Webpages/2025-07-24_02.html
