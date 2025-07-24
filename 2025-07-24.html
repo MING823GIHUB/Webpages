@@ -47,21 +47,18 @@
             display: flex;
             align-items: center;
             padding: 1rem;
-            background-color: #f8f9fa;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
         }
         .flow-item-role {
             font-weight: 900;
             font-size: 1.25rem;
-            color: #c70039;
             width: 6rem;
             text-align: center;
         }
         .flow-item-jiaotou {
             font-weight: 700;
             font-size: 1.1rem;
-            color: #1f2937;
             margin-left: 1.5rem;
         }
         .highlight-card {
@@ -116,22 +113,40 @@
                 <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">2027丁未正科的職司分配已經公佈，其中最受矚目的，莫過於頂頭角將在睽違超過一甲子、<span class="text-xl font-bold text-red-700">歷經120多年後</span>，再次與溫王爺結緣，承擔其重要職司。這不只是一次輪替，更是一場跨越百年的歷史性回歸，意義非凡。</p>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                    <div class="flow-card highlight-card">
+                    <div class="flow-card highlight-card" style="background-color: #00008B; color: white;">
                         <div class="text-center p-4">
-                             <p class="text-2xl font-bold text-gray-700">溫王爺</p>
-                            <p class="text-5xl font-black my-4" style="color: #c70039;">頂頭角</p>
-                            <p class="text-gray-600 text-lg">「終於輪到了，隔了<span class="text-3xl font-bold text-red-700 mx-1">120</span>多年後，再度結緣。」</p>
+                             <p class="text-2xl font-bold text-white">溫王爺</p>
+                            <p class="text-5xl font-black my-4 text-white">頂頭角</p>
+                            <p class="text-white text-lg">「終於輪到了，隔了<span class="text-3xl font-bold text-red-300 mx-1">120</span>多年後，再度結緣。」</p>
                         </div>
                     </div>
                     
                     <div class="flow-card space-y-4 p-6">
                         <h3 class="text-2xl font-bold text-center text-gray-800 mb-4">本科其餘職司</h3>
-                        <div class="flow-item"><div class="flow-item-role">大千歲</div><div class="flow-item-jiaotou">下中街</div></div>
-                        <div class="flow-item"><div class="flow-item-role">二千歲</div><div class="flow-item-jiaotou">埔仔角</div></div>
-                        <div class="flow-item"><div class="flow-item-role">三千歲</div><div class="flow-item-jiaotou">安海街</div></div>
-                        <div class="flow-item"><div class="flow-item-role">四千歲</div><div class="flow-item-jiaotou">頂中街</div></div>
-                        <div class="flow-item"><div class="flow-item-role">五千歲</div><div class="flow-item-jiaotou">下頭角</div></div>
-                        <div class="flow-item"><div class="flow-item-role">中軍府</div><div class="flow-item-jiaotou">崙仔頂角</div></div>
+                        <div class="flow-item" style="background-color: #FFBF00;">
+                            <div class="flow-item-role" style="color: black;">大千歲</div>
+                            <div class="flow-item-jiaotou" style="color: black;">下中街</div>
+                        </div>
+                        <div class="flow-item" style="background-color: #FF69B4;">
+                            <div class="flow-item-role" style="color: black;">二千歲</div>
+                            <div class="flow-item-jiaotou" style="color: black;">埔仔角</div>
+                        </div>
+                        <div class="flow-item" style="background-color: #000000;">
+                            <div class="flow-item-role" style="color: white;">三千歲</div>
+                            <div class="flow-item-jiaotou" style="color: white;">安海街</div>
+                        </div>
+                        <div class="flow-item" style="background-color: #006400;">
+                            <div class="flow-item-role" style="color: white;">四千歲</div>
+                            <div class="flow-item-jiaotou" style="color: white;">頂中街</div>
+                        </div>
+                        <div class="flow-item" style="background-color: #8A2BE2;">
+                            <div class="flow-item-role" style="color: white;">五千歲</div>
+                            <div class="flow-item-jiaotou" style="color: white;">下頭角</div>
+                        </div>
+                        <div class="flow-item" style="background-color: #F0F0F0;">
+                            <div class="flow-item-role" style="color: black;">中軍府</div>
+                            <div class="flow-item-jiaotou" style="color: black;">崙仔頂角</div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -219,8 +234,8 @@
                 datasets: [{
                     label: '扛溫王轎次數 (科)',
                     data: wenWangData.values,
-                    backgroundColor: '#ffc300',
-                    borderColor: '#c79a00',
+                    backgroundColor: '#00008B', /* Changed to deep blue */
+                    borderColor: '#000066', /* Darker shade of deep blue */
                     borderWidth: 2,
                     borderRadius: 5,
                 }]
@@ -240,8 +255,8 @@
                 datasets: [{
                     label: '扛大千歲次數 (科)',
                     data: daQianSuiData.values,
-                    backgroundColor: '#ff5733',
-                    borderColor: '#c73e1a',
+                    backgroundColor: '#FFBF00', /* Changed to yellow */
+                    borderColor: '#E6B800', /* Darker shade of yellow */
                     borderWidth: 2,
                     borderRadius: 5,
                 }]
@@ -263,12 +278,12 @@
                     {
                         label: '扛溫王轎 (科)',
                         data: stackedData.wenWang,
-                        backgroundColor: '#ffc300',
+                        backgroundColor: '#00008B', /* Changed to deep blue */
                     },
                     {
                         label: '扛大千歲 (科)',
                         data: stackedData.daQianSui,
-                        backgroundColor: '#ff5733',
+                        backgroundColor: '#FFBF00', /* Changed to yellow */
                     }
                 ]
             },
@@ -307,6 +322,8 @@
                 }
             }
         });
+
+        // The 'totalDutiesChart' section and its JavaScript code have been removed.
     </script>
 </body>
 </html>
