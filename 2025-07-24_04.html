@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真實才有戲 - 互動資訊圖表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues (Adapted) -->
+    <!-- Application Structure Plan: The infographic follows a narrative flow from abstract to concrete. 1. Hook: A powerful opening statement establishing the core theme. 2. Core Formula: Visually represents the foundational equation of storytelling. 3. F-M-E Framework: Explains the key components with an interactive radar chart that visualizes the balance of different story types. 4. Structural Blueprints: Presents the Five-Step and Four-Panel methods as actionable diagrams. 5. Case Studies: Allows users to apply the F-M-E concept by seeing how real examples score on the chart. This structure guides the user through a logical learning path, making complex ideas digestible and memorable. -->
+    <!-- Visualization & Content Choices: 1. Core Formula (真實×參與×反思): Goal: Inform. Viz: Large, stylized typography. Justification: More impactful than a chart for a core philosophical statement. Method: HTML/CSS. 2. F-M-E Framework: Goal: Compare/Inform. Viz: Radar Chart. Justification: Perfectly visualizes the multi-dimensional balance of Fact, Meaning, and Emotion, making it easy to compare story compositions. Method: Chart.js (Canvas). 3. Narrative Structures: Goal: Organize. Viz: Flow diagrams built with styled HTML/CSS. Justification: Compliant with NO SVG/Mermaid rule, provides a clear, step-by-step visual representation of the processes. Method: HTML/CSS with Tailwind Flexbox. 4. Role-based Applications: Goal: Compare. Viz: A bar chart. Justification: Effectively compares the impact of storytelling across different roles (Teacher, Director, Principal) on key metrics. Method: Chart.js (Canvas). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F0F4F8; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 320px; max-height: 450px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .gradient-text { background: linear-gradient(90deg, #58508d, #bc5090); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; }
+        .kpi-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <!-- Section 1: Title & Hook -->
+        <section class="text-center my-12">
+            <h1 class="text-5xl md:text-7xl font-black gradient-text mb-4">真實才有戲</h1>
+            <p class="text-xl md:text-2xl font-bold text-gray-700">把校園現場煉成領導影響力</p>
+            <div class="mt-8 text-2xl md:text-4xl font-bold text-center text-gray-700 bg-white rounded-full shadow-lg p-6 inline-block">
+                <span class="text-[#003f5c]">真實</span>
+                <span class="text-[#bc5090] mx-2">×</span>
+                <span class="text-[#003f5c]">參與</span>
+                <span class="text-[#bc5090] mx-2">×</span>
+                <span class="text-[#003f5c]">反思</span>
+                <span class="text-[#ff6361] mx-2">→</span>
+                <span class="gradient-text">動人故事</span>
+            </div>
+            <p class="mt-6 max-w-2xl mx-auto text-gray-600">有效的說故事，並非憑空捏造，而是深度參與、認真觀察與反思，將真實經驗轉化為動人敘事。這不僅是溝通技巧，更是領導力與自我認識的核心。</p>
+        </section>
+
+        <!-- Section 2: F-M-E Framework -->
+        <section class="my-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">故事的煉金術：F-M-E 框架</h2>
+                <p class="text-lg text-gray-600">一個動人的故事，是「事實、意義、情感」的完美結合。</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-l-8 border-[#58508d]">
+                        <h3 class="text-2xl font-bold text-[#58508d] mb-2">F - 事實 (Fact)</h3>
+                        <p>故事的骨架。具體的場景、角色、動作、數據，讓聽眾「看得見」事件的發生。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-l-8 border-[#bc5090]">
+                        <h3 class="text-2xl font-bold text-[#bc5090] mb-2">M - 意義 (Meaning)</h3>
+                        <p>故事的靈魂。事件為何重要、對誰有影響，將現象提升為洞見，避免流水帳。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-l-8 border-[#ff6361]">
+                        <h3 class="text-2xl font-bold text-[#ff6361] mb-2">E - 情感 (Emotion)</h3>
+                        <p>故事的溫度。說故事者的感受、脆弱、驚喜，讓聽眾「感同身受」。</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-xl">
+                    <p class="text-center font-semibold mb-4">案例故事 F-M-E 雷達圖</p>
+                    <div class="chart-container">
+                        <canvas id="fmeRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Narrative Structures -->
+        <section class="my-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">敘事結構藍圖</h2>
+                <p class="text-lg text-gray-600">選擇合適的結構，能讓你的故事更有層次與張力。</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-6">五步法：人物成長故事</h3>
+                    <div class="flex flex-col space-y-2 items-center">
+                        <div class="p-4 bg-blue-100 text-blue-800 rounded-lg w-full text-center font-semibold">起：建立情境</div>
+                        <div class="text-3xl text-blue-300">↓</div>
+                        <div class="p-4 bg-blue-100 text-blue-800 rounded-lg w-full text-center font-semibold">承：發展挑戰</div>
+                        <div class="text-3xl text-blue-300">↓</div>
+                        <div class="p-4 bg-purple-100 text-purple-800 rounded-lg w-full text-center font-bold text-lg">轉：衝突轉折</div>
+                        <div class="text-3xl text-purple-300">↓</div>
+                        <div class="p-4 bg-green-100 text-green-800 rounded-lg w-full text-center font-semibold">合：呈現成果</div>
+                        <div class="text-3xl text-green-300">↓</div>
+                        <div class="p-4 bg-yellow-100 text-yellow-800 rounded-lg w-full text-center font-semibold">省思：提升深度</div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-6">四格法：任務解決故事</h3>
+                    <div class="grid grid-cols-2 gap-4 h-full">
+                        <div class="bg-gray-100 p-6 rounded-lg flex flex-col justify-center items-center">
+                            <h4 class="font-bold text-xl">背景</h4><p class="text-sm text-gray-500">建立問題意識</p>
+                        </div>
+                        <div class="bg-red-100 p-6 rounded-lg flex flex-col justify-center items-center">
+                            <h4 class="font-bold text-xl text-red-800">衝突</h4><p class="text-sm text-red-600">形成戲劇張力</p>
+                        </div>
+                        <div class="bg-indigo-100 p-6 rounded-lg flex flex-col justify-center items-center">
+                            <h4 class="font-bold text-xl text-indigo-800">行動</h4><p class="text-sm text-indigo-600">突顯選擇努力</p>
+                        </div>
+                        <div class="bg-teal-100 p-6 rounded-lg flex flex-col justify-center items-center">
+                            <h4 class="font-bold text-xl text-teal-800">成果</h4><p class="text-sm text-teal-600">呈現價值成效</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Application & Impact -->
+        <section class="my-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">敘事實踐與影響力</h2>
+                <p class="text-lg text-gray-600">將敘事應用於不同校園角色，能有效驅動關鍵指標成長。</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl">
+                <p class="text-center font-semibold mb-4">敘事對校園關鍵指標的預期影響</p>
+                <div class="chart-container h-96 md:h-[450px]">
+                    <canvas id="impactBarChart"></canvas>
+                </div>
+                <p class="text-xs text-center text-gray-500 mt-4">此圖表根據報告內容，將不同角色的敘事應用所能達成的預期效果進行量化比較，數值為相對影響力評分。</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fmeData = {
+                labels: ['F (事實)', 'M (意義)', 'E (情感)'],
+                datasets: [
+                    {
+                        label: '校狗教會我們的事 (生命教育)',
+                        data: [5, 5, 4],
+                        borderColor: '#58508d',
+                        backgroundColor: 'rgba(88, 80, 141, 0.2)',
+                        pointBackgroundColor: '#58508d',
+                        hidden: false,
+                    },
+                    {
+                        label: '誰說鐘聲只有一種 (美感教育)',
+                        data: [4, 5, 3],
+                        borderColor: '#bc5090',
+                        backgroundColor: 'rgba(188, 80, 144, 0.2)',
+                        pointBackgroundColor: '#bc5090',
+                        hidden: false,
+                    },
+                    {
+                        label: '故事銀行 (價值認同)',
+                        data: [4, 5, 5],
+                        borderColor: '#ff6361',
+                        backgroundColor: 'rgba(255, 99, 97, 0.2)',
+                        pointBackgroundColor: '#ff6361',
+                        hidden: false,
+                    }
+                ]
+            };
+
+            const fmeRadarCtx = document.getElementById('fmeRadarChart').getContext('2d');
+            new Chart(fmeRadarCtx, {
+                type: 'radar',
+                data: fmeData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { font: { size: 14, weight: 'bold' }, color: '#003f5c'},
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: { display: false, stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 12 } } },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const impactData = {
+                labels: [['同儕理解', '& 家長參與'], ['師生接受度', '& 跨組協作'], ['品牌信任度', '& 外部資源']],
+                datasets: [
+                    {
+                        label: '班級導師 (人物故事)',
+                        data: [85, 50, 20],
+                        backgroundColor: '#58508d',
+                    },
+                    {
+                        label: '主任 (專題報導)',
+                        data: [40, 90, 60],
+                        backgroundColor: '#bc5090',
+                    },
+                    {
+                        label: '校長 (年度敘事)',
+                        data: [30, 75, 95],
+                        backgroundColor: '#ff6361',
+                    }
+                ]
+            };
+            
+            const impactBarCtx = document.getElementById('impactBarChart').getContext('2d');
+            new Chart(impactBarCtx, {
+                type: 'bar',
+                data: impactData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { suggestedMax: 100, grid: { display: false }, ticks: { callback: value => value + '%' } },
+                        y: { grid: { display: true }, ticks: { font: { size: 14, weight: 'bold'}}}
+                    },
+                    plugins: {
+                        title: { display: false },
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}% 影響力`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
