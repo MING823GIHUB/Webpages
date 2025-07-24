@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>東港迎王七角頭職司歷史資訊圖表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #c70039, #ff5733);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .kpi-card {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 5px solid #ffc300;
+        }
+        .flow-card {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            transition: all 0.3s ease-in-out;
+        }
+        .flow-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .flow-item-role {
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: #c70039;
+            width: 6rem;
+            text-align: center;
+        }
+        .flow-item-jiaotou {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1f2937;
+            margin-left: 1.5rem;
+        }
+        .highlight-card {
+            border: 3px solid #c70039;
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(199, 0, 57, 0.2), 0 10px 10px -5px rgba(199, 0, 57, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-black gradient-text mb-2">七角頭迎王職司傳承錄</h1>
+            <p class="text-lg md:text-xl text-gray-600">一份關於東港七角頭扛轎歷史與展望的數據圖解</p>
+        </header>
+
+        <main class="space-y-12">
+
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">東港迎王平安祭典：世代相傳的信仰盛事</h2>
+                <p class="text-gray-600 mb-6">東港迎王平安祭典是台灣重要的無形文化資產，每三年一科，恭迎代天巡狩的王爺們，旨在驅逐瘟疫、祈求地方平安。這項盛事不僅是宗教儀式，更是凝聚地方居民情感、展現傳統文化深厚底蘊的重要慶典。七角頭作為祭典中的核心組織，各自肩負著歷史悠久的職司與榮耀。</p>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">扛溫王轎：榮譽的象徵</h2>
+                <p class="text-gray-600 mb-6">溫王爺的轎班是迎王祭典中的至高榮譽。數據顯示，在歷史長河中，崙仔頂角承擔此重任最多次，是名副其實的核心力量。</p>
+                <div class="chart-container">
+                    <canvas id="wenWangChart"></canvas>
+                </div>
+            </section>
+            
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">扛大千歲：重要職責的傳承</h2>
+                <p class="text-gray-600 mb-6">大千歲在迎王祭典中扮演著關鍵角色，其轎班責任重大。值得注意的是，頂頭角在扛溫王轎記錄中雖為零，卻在此項職務中次數最多，展現了各角頭間獨特的分工與傳承。</p>
+                <div class="chart-container">
+                    <canvas id="daQianSuiChart"></canvas>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">職司分工：傳統中的平衡</h2>
+                <p class="text-gray-600 mb-6">將兩項主要職務合併觀察，可以更清晰地看見各角頭的歷史貢獻與角色定位。崙仔頂角專注於溫王，而頂頭角則長期擔任大千歲的轎班，形成一種巧妙的平衡。此圖表顯示了每個角頭承擔這兩項職務的總次數與分佈。</p>
+                <div class="chart-container h-[500px] max-h-[60vh]">
+                    <canvas id="stackedBarChart"></canvas>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">展望2027丁未正科：歷史性的交會</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">2027丁未正科的職司分配已經公佈，其中最受矚目的，莫過於頂頭角將在睽違超過一甲子、<span class="text-xl font-bold text-red-700">歷經120多年後</span>，再次與溫王爺結緣，承擔其重要職司。這不只是一次輪替，更是一場跨越百年的歷史性回歸，意義非凡。</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div class="flow-card highlight-card">
+                        <div class="text-center p-4">
+                             <p class="text-2xl font-bold text-gray-700">溫王爺</p>
+                            <p class="text-5xl font-black my-4" style="color: #c70039;">頂頭角</p>
+                            <p class="text-gray-600 text-lg">「終於輪到了，隔了<span class="text-3xl font-bold text-red-700 mx-1">120</span>多年後，再度結緣。」</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-card space-y-4 p-6">
+                        <h3 class="text-2xl font-bold text-center text-gray-800 mb-4">本科其餘職司</h3>
+                        <div class="flow-item"><div class="flow-item-role">大千歲</div><div class="flow-item-jiaotou">下中街</div></div>
+                        <div class="flow-item"><div class="flow-item-role">二千歲</div><div class="flow-item-jiaotou">埔仔角</div></div>
+                        <div class="flow-item"><div class="flow-item-role">三千歲</div><div class="flow-item-jiaotou">安海街</div></div>
+                        <div class="flow-item"><div class="flow-item-role">四千歲</div><div class="flow-item-jiaotou">頂中街</div></div>
+                        <div class="flow-item"><div class="flow-item-role">五千歲</div><div class="flow-item-jiaotou">下頭角</div></div>
+                        <div class="flow-item"><div class="flow-item-role">中軍府</div><div class="flow-item-jiaotou">崙仔頂角</div></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-300">
+            <p class="text-gray-500">數據承載信仰，傳統生生不息。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const sharedChartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e5e7eb',
+                    },
+                    ticks: {
+                        color: '#4b5563',
+                        font: {
+                            weight: 'bold',
+                        },
+                        stepSize: 1
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        color: '#1f2937',
+                        font: {
+                            size: 14,
+                            weight: 'bold',
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    titleFont: {
+                        size: 16,
+                        weight: 'bold',
+                    },
+                    bodyFont: {
+                        size: 14,
+                    },
+                    padding: 12,
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            }
+        };
+
+        const wenWangData = {
+            labels: ['崙仔頂角', '埔仔角', '下頭角', '下中街', '頂中街', '安海街', '頂頭角'],
+            values: [8, 7, 3, 3, 3, 1, 0]
+        };
+        const wenWangCtx = document.getElementById('wenWangChart').getContext('2d');
+        new Chart(wenWangCtx, {
+            type: 'bar',
+            data: {
+                labels: wenWangData.labels,
+                datasets: [{
+                    label: '扛溫王轎次數 (科)',
+                    data: wenWangData.values,
+                    backgroundColor: '#ffc300',
+                    borderColor: '#c79a00',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                }]
+            },
+            options: sharedChartOptions
+        });
+
+        const daQianSuiData = {
+            labels: ['頂頭角', '頂中街', '埔仔角', '下頭角', '下中街', '安海街', '崙仔頂角'],
+            values: [6, 4, 4, 3, 3, 3, 2]
+        };
+        const daQianSuiCtx = document.getElementById('daQianSuiChart').getContext('2d');
+        new Chart(daQianSuiCtx, {
+            type: 'bar',
+            data: {
+                labels: daQianSuiData.labels,
+                datasets: [{
+                    label: '扛大千歲次數 (科)',
+                    data: daQianSuiData.values,
+                    backgroundColor: '#ff5733',
+                    borderColor: '#c73e1a',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                }]
+            },
+            options: sharedChartOptions
+        });
+
+        const allJiaotou = ['崙仔頂角', '埔仔角', '頂頭角', '頂中街', '下頭角', '下中街', '安海街'];
+        const stackedData = {
+            wenWang: [8, 7, 0, 3, 3, 3, 1],
+            daQianSui: [2, 4, 6, 4, 3, 3, 3]
+        };
+        const stackedBarCtx = document.getElementById('stackedBarChart').getContext('2d');
+        new Chart(stackedBarCtx, {
+            type: 'bar',
+            data: {
+                labels: allJiaotou,
+                datasets: [
+                    {
+                        label: '扛溫王轎 (科)',
+                        data: stackedData.wenWang,
+                        backgroundColor: '#ffc300',
+                    },
+                    {
+                        label: '扛大千歲 (科)',
+                        data: stackedData.daQianSui,
+                        backgroundColor: '#ff5733',
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: { color: '#1f2937', font: { size: 14, weight: 'bold' } }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { color: '#e5e7eb' },
+                        ticks: { color: '#4b5563', font: { weight: 'bold' } }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#1f2937',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 16, weight: 'bold' },
+                        bodyFont: { size: 14 },
+                        padding: 12,
+                        callbacks: {
+                           title: tooltipTitleCallback
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
