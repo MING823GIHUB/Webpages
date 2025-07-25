@@ -10,3 +10,5 @@
 ### https://ming823gihub.github.io/Webpages/2025-07-24_03.html
 ## 真實才有戲 - 互動資訊圖表
 ### https://ming823gihub.github.io/Webpages/2025-07-24_04.html
+## GEG教學心法開示區
+### https://ming823gihub.github.io/Webpages/2025-07-25_01.html
