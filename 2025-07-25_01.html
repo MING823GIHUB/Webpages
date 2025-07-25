@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEG教學心法開示區</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Noto+Serif+TC:wght@400;700&family=Product+Sans:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .serif-font {
+            font-family: 'Noto Serif TC', serif;
+        }
+        /* Google 風格邊框 */
+        .google-border {
+            position: relative;
+            padding: 10px;
+        }
+        .google-border::before, .google-border::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
+        .google-border::before {
+            top: 0;
+            background-color: #4285F4; /* Blue */
+        }
+        .google-border::after {
+            bottom: 0;
+            background-color: #34A853; /* Green */
+        }
+        #google-border-left, #google-border-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 10px;
+        }
+        #google-border-left {
+            left: 0;
+            background-color: #EA4335; /* Red */
+        }
+        #google-border-right {
+            right: 0;
+            background-color: #FBBC05; /* Yellow */
+        }
+
+        .happy-bg {
+            background: radial-gradient(circle, rgba(255,253,224,1) 0%, rgba(255,229,180,1) 100%);
+        }
+        .btn-draw {
+            background-color: #4285F4;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-draw:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            background-color: #5a95f5;
+        }
+        
+        /* 斷線小恐龍場景 */
+        .dino-scene {
+            position: relative;
+            width: 300px;
+            height: 120px;
+            overflow: hidden;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .dino {
+            position: absolute;
+            bottom: 18px; /* 微調位置以對齊地面 */
+            left: 20px;
+            width: 44px;
+            height: 47px;
+            animation: dino-run 0.4s infinite steps(2);
+        }
+        @keyframes dino-run {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0); }
+        }
+        .cactus {
+            position: absolute;
+            bottom: 20px;
+            width: 24px;
+            height: 50px;
+            animation: slide-left 2.5s linear infinite;
+            right: -30px; /* 起始位置在畫面外 */
+        }
+        .ground {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 200%;
+            height: 2px;
+            background-image: linear-gradient(to right, #535353 50%, transparent 50%);
+            background-size: 20px 2px;
+            animation: slide-left 1.2s linear infinite;
+        }
+        @keyframes slide-left {
+            from { transform: translateX(0%); }
+            to { transform: translateX(-100%); }
+        }
+
+
+        /* 籤筒動畫 */
+        .fortune-container {
+            position: relative;
+            width: 150px;
+            height: 200px;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+        }
+        .fortune-container-body { position: absolute; bottom: 0; width: 100%; height: 150px; background: #8B4513; border: 5px solid #DAA520; border-top: none; border-radius: 0 0 40px 40px; }
+        .fortune-stick { position: absolute; bottom: 20px; left: 50%; width: 8px; height: 180px; background: #f1c40f; border-top: 10px solid #c0392b; transform-origin: bottom center; }
+        @keyframes shake { 0%, 100% { transform: translate(0, 0) rotate(0); } 20% { transform: translate(-5px, 0) rotate(-5deg); } 40% { transform: translate(5px, 0) rotate(5deg); } 60% { transform: translate(-5px, 0) rotate(-3deg); } 80% { transform: translate(5px, 0) rotate(3deg); } }
+
+        /* 大吉文字與籤詩浮現動畫 */
+        .great-fortune-text, .fortune-slip { display: none; opacity: 0; }
+        .great-fortune-text.animate, .fortune-slip.animate { display: block; animation: emerge 1.5s ease-out forwards; }
+        @keyframes emerge { from { transform: scale(0.2) translateY(100px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+        .fortune-paper { background-color: #fffaf0; border: 2px solid #d4b996; box-shadow: 5px 5px 15px rgba(0,0,0,0.1); padding: 2rem; max-width: 800px; margin: 2rem auto; border-radius: 8px; }
+        .quote { font-size: 2.5rem; font-weight: bold; color: #c0392b; text-align: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 3px double #d4b996; }
+        .section-title { font-size: 1.5rem; font-weight: bold; color: #8B4513; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 2px solid #8B4513; }
+        #fortune-application ol { list-style-type: decimal; list-style-position: inside; padding-left: 1rem; }
+        #fortune-application li { margin-bottom: 1rem; }
+        .share-section { background-color: #fdf6e3; border: 1px solid #d4b996; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; }
+        .social-icon { transition: transform 0.2s; }
+        .social-icon:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- 首頁 (Google 風格) -->
+    <div id="page-home" class="min-h-screen w-full flex flex-col items-center justify-center p-4 text-center bg-white google-border relative">
+        <!-- Google 四色邊框 -->
+        <div id="google-border-left"></div>
+        <div id="google-border-right"></div>
+
+        <div class="relative z-10 flex flex-col items-center">
+            <!-- Google Logo (SVG) -->
+            <svg class="w-48 md:w-56 mb-6" viewBox="0 0 190 65" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    .google-font { font-family: 'Product Sans', 'Noto Sans TC', sans-serif; font-weight: 700; font-size: 50px; }
+                </style>
+                <text x="0" y="50" class="google-font" fill="#4285F4">G</text>
+                <text x="36" y="50" class="google-font" fill="#EA4335">o</text>
+                <text x="63" y="50" class="google-font" fill="#FBBC05">o</text>
+                <text x="90" y="50" class="google-font" fill="#4285F4">g</text>
+                <text x="117" y="50" class="google-font" fill="#34A853">l</text>
+                <text x="129" y="50" class="google-font" fill="#EA4335">e</text>
+            </svg>
+            
+            <h1 class="serif-font text-4xl md:text-5xl font-bold my-4 text-gray-700">《GEG教學心法開示區》</h1>
+            
+            <!-- 斷線小恐龍場景 -->
+            <div class="dino-scene">
+                <div class="ground"></div>
+                <div class="dino">
+                    <!-- The one and only, classic T-Rex -->
+                    <svg viewBox="0 0 88 94" fill="#535353" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M87.9 78.3H83.8V42.2H77.6V48.2H69.5V12H63.3V34.2H57.2V18.1H51.1V0H45V18.1H38.8V34.2H32.7V18.1H26.5V26.2H20.9V34.2H14.8V42.2H8.7V78.3H0V84.4H8.7V86.4H14.8V88.4H20.9V90.5H26.5V92.5H32.7V94.5H57.2V92.5H63.3V90.5H69.5V88.4H77.6V86.4H83.8V84.4H87.9V78.3ZM51.1 48.2H45V42.2H51.1V48.2Z" />
+                    </svg>
+                </div>
+                <div class="cactus">
+                    <svg viewBox="0 0 24 50" fill="#535353" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 50H21V29H18V50H15V23H12V50H9V17H6V50H3V0H6V11H9V4H12V11H15V20H18V11H21V26H24V50Z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <p class="text-xl md:text-2xl mt-4 mb-2 text-gray-600">靈感斷線了嗎？</p>
+            <p class="text-xl md:text-2xl mb-8 text-gray-600">讓GEG大神為你指點迷津</p>
+
+            <button id="draw-button" class="btn-draw">尋找靈感</button>
+        </div>
+    </div>
+
+    <!-- 過場頁面 -->
+    <div id="page-intermediate" class="min-h-screen w-full flex flex-col items-center justify-center p-4 text-center happy-bg hidden">
+        <!-- 籤筒動畫 -->
+        <div id="fortune-container-wrapper" class="flex flex-col items-center">
+            <div class="fortune-container">
+                <div class="fortune-container-body"></div>
+                <div class="fortune-stick" style="transform: translateX(-50%) rotate(-10deg);"></div>
+                <div class="fortune-stick" style="transform: translateX(-50%) rotate(0deg);"></div>
+                <div class="fortune-stick" style="transform: translateX(-50%) rotate(10deg);"></div>
+            </div>
+            <p class="text-2xl text-yellow-800 mt-8">誠心祈求中...</p>
+        </div>
+
+        <!-- 大吉文字 -->
+        <h2 id="great-fortune-text" class="great-fortune-text text-8xl font-bold text-red-600 mb-8 animate-pulse serif-font" style="text-shadow: 3px 3px 5px rgba(0,0,0,0.3);">大吉</h2>
+        
+        <!-- 籤詩圖案 (SVG) -->
+        <div id="fortune-slip" class="fortune-slip">
+            <svg class="w-48 drop-shadow-xl" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="5" width="110" height="190" rx="10" fill="#FFF8E1" stroke="#D2B48C" stroke-width="3"/>
+                <text x="60" y="105" font-family="Noto Serif TC, serif" font-size="40" fill="#C0392B" text-anchor="middle" dominant-baseline="middle" font-weight="bold">上上籤</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 結果頁面 -->
+    <div id="page-result" class="min-h-screen w-full bg-gray-100 p-4 md:p-8 hidden">
+        <div class="fortune-paper serif-font">
+            <h2 id="fortune-quote" class="quote"></h2>
+            <div>
+                <h3 class="section-title">【情境解讀】</h3>
+                <p id="fortune-interpretation" class="text-lg text-gray-700 leading-relaxed"></p>
+            </div>
+            <div>
+                <h3 class="section-title">【心法詳解與教學應用】</h3>
+                <div id="fortune-application" class="text-lg text-gray-700 leading-relaxed"></div>
+            </div>
+        </div>
+        
+        <!-- 分享區塊 -->
+        <div class="max-w-4xl mx-auto text-center mt-8">
+            <div class="share-section">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">分享我的神籤與智慧</h3>
+                <div class="flex justify-center items-center space-x-6">
+                    <a id="fb-share" href="#" target="_blank" class="social-icon">
+                        <svg class="w-12 h-12" role="img" viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg"><title>Facebook</title><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a id="ig-share" href="https://www.instagram.com" target="_blank" class="social-icon">
+                         <svg class="w-12 h-12" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><defs><radialGradient id="ig-grad" cx="30%" cy="107%" r="150%"><stop offset="0" stop-color="#fdf497"/><stop offset="0.05" stop-color="#fdf497"/><stop offset="0.45" stop-color="#fd5949"/><stop offset="0.6" stop-color="#d6249f"/><stop offset="0.9" stop-color="#285AEB"/></radialGradient></defs><path fill="url(#ig-grad)" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.784.305-1.457.718-2.123 1.384S.935 3.356.63 4.14C.333 4.905.132 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.784.718 1.457 1.384 2.123s1.34 1.078 2.124 1.384c.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.784-.306 1.457-.718 2.123-1.384s1.078-1.34 1.384-2.124c.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.148-.558-2.913-.306-.784-.718-1.457-1.384-2.123S20.644.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.056 1.17-.249 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.819.679-1.381.896-.422.164-1.057.36-2.227.413-1.266.057-1.646.07-4.85.07s-3.585-.015-4.85-.074c-1.17-.056-1.805-.249-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.819-.896-1.381-.164-.422-.36-1.057-.413-2.227-.057-1.266-.07-1.646-.07-4.85s.015-3.585.07-4.85c.055-1.17.249-1.805.413-2.227.217-.562.477.96.896-1.382.42-.419.819-.679 1.381-.896.422-.164 1.057.36 2.227-.413C8.415 2.175 8.797 2.16 12 2.16zm0 5.48c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7.16c-1.468 0-2.66-1.192-2.66-2.66s1.192-2.66 2.66-2.66 2.66 1.192 2.66 2.66-1.192 2.66-2.66 2.66zm6.336-7.74c0 .795-.646 1.44-1.44 1.44s-1.44-.645-1.44-1.44.646-1.44 1.44-1.44 1.44.645 1.44 1.44z"/></svg>
+                    </a>
+                    <a id="threads-share" href="#" target="_blank" class="social-icon">
+                        <svg class="w-12 h-12" role="img" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg"><title>Threads</title><path d="M14.152 18.233c-1.34.544-2.793.83-4.295.83-1.492 0-2.932-.28-4.25-.81a1.093 1.093 0 0 1-.6-1.462c.352-.61 1.003-.843 1.62-.49.98.396 2.02.608 3.1.608 1.07 0 2.108-.21 3.078-.6.61-.248 1.27-.01 1.62.6.352.61.12 1.352-.573 1.614Zm-4.32-6.256c-.982 0-1.92-.19-2.8-.54-.62-.25-1.28-.01-1.63.6-.35.61-.12 1.35.58 1.61.9.36 1.85.55 2.85.55.98 0 1.92-.19 2.8-.54.62-.25-1.28-.01-1.63.6.35.61.12 1.35-.58 1.61-.9.36-1.85.55-2.85.55ZM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.627 0 12-5.373 12-12S18.627 0 12 0Zm4.24 9.02c-.35-.61-1.01-.84-1.63-.6-.97.39-2.01.6-3.08.6-1.08 0-2.12-.21-3.1-.6-.61-.25-1.27-.01-1.62.6-.35.61-.12 1.35.57 1.61 1.34.54 2.79.83 4.3.83 1.49 0 2.93-.28 4.25-.81.61-.25 1.27-.01 1.62.6.35.61.12 1.35-.57 1.61-1.6.64-3.34 1-5.13 1-1.8 0-3.54-.36-5.14-1-.7-.28-.93-1.01-.58-1.61.35-.61 1.01-.84 1.63-.6.97.39 2.01.6 3.08.6s2.11-.21 3.08-.6c.61-.25 1.27-.01 1.62.6.35.61.12 1.35-.57 1.61-1.34.54-2.79.83-4.3.83-1.49 0-2.93-.28-4.25-.81-.7-.28-.93-1.01-.58-1.61.35-.61 1.01-.84 1.63-.6.97.39 2.01.6 3.08.6s2.11-.21 3.08-.6c.61-.25 1.27-.01 1.62.6.35.61.12 1.35-.57 1.61-1.6.64-3.34 1-5.13 1-1.8 0-3.54-.36-5.14-1-.7-.28-.93-1.01-.58-1.61.35-.61 1.01-.84 1.63-.6.97.39 2.01.6 3.08.6s2.11-.21 3.08-.6c.61-.25 1.27-.01 1.62.6.35.61.12 1.35-.57 1.61Z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <button onclick="goHome()" class="btn-draw !text-xl !py-3 !px-8 mt-6 serif-font">[ 返回首頁，再次祈求 ]</button>
+        </div>
+    </div>
+
+    <script>
+        // GEG 金句與心法資料庫 (已修正重複編號問題)
+        const fortunes = [
+            { quote: "分享才會找到夥伴。", interpretation: "您可能正感到孤軍奮戰，無論是推動新的教學法、學習新工具，或是面對教學現場的挑戰，都覺得身邊缺少可以討論、共同前行的戰友。", application: "**建立科內「酷工具分享」Google Slides**：建立一份共享簡報，每位老師認領一頁，定期（如每兩週）分享一個自己發現的實用工具或教學技巧，並在簡報留言區交流。|**善用 Google Classroom「訊息串」發起討論**：在您的科任或班級的訊息串中，拋出一個您正在思考的教學問題，並邀請其他老師或學生使用留言功能提供想法，將單向公告變為雙向溝通。|**利用 Google Sites 建立個人教學部落格**：快速建立一個簡單的個人網站，將您的教學心得、教案設計整理成文章。將網站連結放在您的社群簽名檔，讓分享成為您的數位名片。" },
+            { quote: "先求有，再求好。", interpretation: "您可能因為追求完美而遲遲無法開始。總想著要設計出最完美的教案、最炫的簡報，反而被自己的高標準綁架，陷入「計畫焦慮」。", application: "**用 Google 表單製作「概念快篩」測驗**：與其設計複雜的評量，不如先用表單出3-5題選擇題，快速檢核學生的核心概念是否建立，並利用「自動回饋」功能立即給予指引。|**利用 Google Docs 的「範本」功能快速產出學習單**：不要從零開始，將您常用的學習單格式儲存為範本，每次要用時直接取用，專注於內容的填充而非版面的設計。|**在 Google Slides 中使用「探索」功能一鍵美化**：內容完成後，點擊右下角的「探索」按鈕，讓 AI 自動推薦適合的版面設計，一秒鐘讓您的簡報從「有」變「好」。" },
+            { quote: "電腦不會爆炸。", interpretation: "您可能對於嘗試新科技感到恐懼或猶豫，深怕按錯一個鍵就讓一切毀於一旦，或是在學生面前出糗。這種「科技恐懼症」正阻礙您前進。", application: "**善用 Google 文件的「版本紀錄」當作安全網**：在嘗試任何不熟悉的功能前，先到「檔案 > 版本紀錄 > 為目前版本命名」，為當前狀態建立一個還原點，放心大膽地去嘗試。|**開設一個「測試用」的 Google Classroom**：建立一個沒有學生的 Classroom，將自己和同事或分身帳號加入，在這個安全的沙盒環境中，盡情測試各種作業、評分、外掛功能。|**將「右鍵」當作您的探索魔杖**：在 Google Workspace 的任何地方（文件、儲存空間、儲存格），養成按右鍵的習慣，您會發現許多隱藏的實用功能，這比看說明文件更直覺。" },
+            { quote: "放下，人生才會開闊。", interpretation: "您可能執著於某個過去的教學方法、某個不再適用的觀念，或是某個與同事、學生的不愉快。這些執念讓您的視野變得狹窄，心情也跟著沉重。", application: "**執行「Google Drive 季末大掃除」**：使用 Google Drive 的搜尋篩選器（例如 `before:2022-01-01`），找出超過三年未動的檔案，建立一個「封存」資料夾將它們移入，釋放您的數位與心靈空間。|**利用 Google Forms 的「摘要」取代人工統計**：放下手動計算問卷結果的執念。讓表單的「回覆 > 摘要」功能自動生成圓餅圖和長條圖，您只需截圖貼到報告中即可。|**在 Google Classroom 中啟用「監護人摘要」**：放下每天回覆家長「孩子作業交了嗎？」的重擔。邀請監護人加入，讓系統自動寄送學生的作業繳交狀況週報，把溝通的責任交給系統。" },
+            { quote: "改變會有風險，但不改變風險會更大。", interpretation: "您可能安於現狀，覺得現在的教法也沒什麼不好，但隱約感覺到，世界正在快速變化，不改變的風險正悄悄累積。", application: "**從「外掛程式」開始微改變**：這個月，只要求自己為 Google Docs 或 Sheets 安裝一個高評價的外掛（例如：文件用的 `Doc to Form`，或試算表的 `Autocrat`），體驗工作流程被優化的快感。|**利用 Google Keep 規劃您的「改變實驗」**：建立一個標籤為「教學實驗」的 Keep 筆記，用清單功能記下您想嘗試的點子、預計的步驟、觀察的指標，讓改變的過程視覺化、可管理。|**觀摩一場 GEG 線上分享會**：與其自己苦思，不如站在巨人的肩膀上。報名參加一場線上研習，看看其他老師如何應用新工具，直接複製成功經驗，大幅降低改變的風險。" },
+        ];
+
+        let currentFortune = {};
+
+        // 頁面切換邏輯
+        const pages = ['page-home', 'page-intermediate', 'page-result'];
+        function showPage(pageId) {
+            pages.forEach(id => {
+                const page = document.getElementById(id);
+                if (id === pageId) {
+                    page.classList.remove('hidden');
+                    page.style.display = 'flex';
+                } else {
+                    page.classList.add('hidden');
+                    page.style.display = 'none';
+                }
+            });
+            if (pageId === 'page-result') {
+                 document.getElementById('page-result').style.display = 'block';
+            }
+        }
+
+        // 抽籤按鈕事件
+        document.getElementById('draw-button').addEventListener('click', () => {
+            document.getElementById('fortune-container-wrapper').style.display = 'flex';
+            document.getElementById('great-fortune-text').classList.remove('animate');
+            document.getElementById('fortune-slip').classList.remove('animate');
+            showPage('page-intermediate');
+            setTimeout(() => {
+                document.getElementById('fortune-container-wrapper').style.display = 'none';
+                const greatFortuneText = document.getElementById('great-fortune-text');
+                greatFortuneText.classList.add('animate');
+                setTimeout(() => {
+                    const fortuneSlip = document.getElementById('fortune-slip');
+                    fortuneSlip.classList.add('animate');
+                    setTimeout(() => {
+                        const randomIndex = Math.floor(Math.random() * fortunes.length);
+                        currentFortune = fortunes[randomIndex];
+                        document.getElementById('fortune-quote').textContent = `「${currentFortune.quote}」`;
+                        document.getElementById('fortune-interpretation').innerHTML = currentFortune.interpretation.replace(/\n/g, '<br>');
+                        const applicationDiv = document.getElementById('fortune-application');
+                        const appItems = currentFortune.application.split('|');
+                        const ol = document.createElement('ol');
+                        appItems.forEach((item, index) => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<strong class="text-blue-600">策略 ${index + 1}：</strong>${item}`;
+                            ol.appendChild(li);
+                        });
+                        applicationDiv.innerHTML = '';
+                        applicationDiv.appendChild(ol);
+                        setupShareLinks();
+                        showPage('page-result');
+                        window.scrollTo(0, 0);
+                    }, 1000); 
+                }, 800); 
+            }, 2000);
+        });
+        
+        function goHome() { showPage('page-home'); }
+
+        function setupShareLinks() {
+            const shareText = `我抽到的GEG教學心法是：「${currentFortune.quote}」\n\n你也來試試手氣，尋找教學靈感吧！`;
+            const pageUrl = window.location.href;
+            const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`;
+            document.getElementById('fb-share').href = fbUrl;
+            const threadsUrl = `https://www.threads.net/intent/post?text=${encodeURIComponent(shareText + "\n" + pageUrl)}`;
+            document.getElementById('threads-share').href = threadsUrl;
+            document.getElementById('ig-share').href = 'https://www.instagram.com';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { showPage('page-home'); });
+    </script>
+</body>
+</html>
