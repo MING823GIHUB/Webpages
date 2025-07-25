@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 故事繪本產生器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .storybook-page {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        .page-hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .page-visible {
+            opacity: 1;
+            transform: scale(1);
+            position: relative;
+        }
+        .loader {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .btn-shiny {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shiny::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            transition: left 0.7s ease-in-out;
+        }
+        .btn-shiny:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-slate-800">
+
+    <div id="app-container" class="min-h-screen container mx-auto p-4 md:p-8 flex flex-col items-center">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-600">AI 故事繪本產生器</h1>
+            <p class="text-lg md:text-xl text-slate-600 mt-2">輸入一個主題，創造屬於你的圖文故事！</p>
+        </header>
+
+        <!-- Input Section -->
+        <div id="input-section" class="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-lg border-2 border-amber-200">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="story-theme" placeholder="例如：一隻愛唱歌的噴火龍" class="flex-grow text-lg p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition">
+                <button id="generate-btn" class="btn-shiny bg-teal-500 hover:bg-teal-600 text-white font-bold text-lg py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-md">
+                    生成我的故事繪本
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading-section" class="w-full max-w-2xl text-center my-10 hidden">
+            <div class="flex justify-center items-center mb-4">
+                <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+            </div>
+            <p id="loading-text" class="text-xl text-slate-700 font-semibold"></p>
+            <div class="w-full bg-gray-200 rounded-full h-4 mt-4 overflow-hidden">
+                <div id="progress-bar" class="bg-green-400 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Storybook Section -->
+        <div id="storybook-container" class="w-full max-w-4xl mt-10 hidden">
+            <div id="storybook-viewer" class="relative bg-white p-4 sm:p-6 rounded-2xl shadow-2xl border-4 border-white overflow-hidden">
+                <!-- Pages will be injected here -->
+            </div>
+            
+            <!-- Navigation -->
+            <div id="navigation-controls" class="flex justify-between items-center mt-6">
+                <button id="prev-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none">
+                    上一頁
+                </button>
+                <div id="page-indicator" class="text-xl font-bold text-slate-600"></div>
+                <button id="next-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none">
+                    下一頁
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const generateBtn = document.getElementById('generate-btn');
+        const storyThemeInput = document.getElementById('story-theme');
+        const inputSection = document.getElementById('input-section');
+        const loadingSection = document.getElementById('loading-section');
+        const loadingText = document.getElementById('loading-text');
+        const progressBar = document.getElementById('progress-bar');
+        const storybookContainer = document.getElementById('storybook-container');
+        const storybookViewer = document.getElementById('storybook-viewer');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageIndicator = document.getElementById('page-indicator');
+
+        let storyPages = [];
+        let currentPageIndex = 0;
+        const totalPages = 12;
+
+        // --- Speech Synthesis ---
+        const synth = window.speechSynthesis;
+        let utterance = new SpeechSynthesisUtterance();
+        utterance.lang = 'zh-TW';
+
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            utterance.text = text;
+            synth.speak(utterance);
+        }
+
+        // --- API Call Functions ---
+        async function generateStoryAndPrompts(theme) {
+            loadingText.textContent = '第一步：正在為您創作故事...';
+            progressBar.style.width = '5%';
+            
+            const prompt = `
+                請為一位國小一年級學生創作一個關於「${theme}」的溫馨短篇故事。
+                故事需要分成 ${totalPages} 段。
+                同時，為每一段故事內容，生成一段詳細的英文繪圖提示詞 (prompt)，用於AI繪圖。
+                繪圖風格要求是「watercolor illustration for a children's storybook, bright and soft colors, gentle lines, whimsical, storybook style」。
+                請確保所有繪圖提示詞中的角色和場景具有連貫性。
+                
+                請以JSON格式回傳，結構如下：
+                {
+                  "pages": [
+                    {
+                      "paragraph": "故事段落文字",
+                      "prompt": "詳細的英文繪圖提示詞"
+                    }
+                  ]
+                }
+            `;
+            
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            pages: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        paragraph: { type: "STRING" },
+                                        prompt: { type: "STRING" }
+                                    },
+                                    required: ["paragraph", "prompt"]
+                                }
+                            }
+                        },
+                        required: ["pages"]
+                    }
+                }
+            };
+
+            try {
+                const apiKey = ""; // Leave empty, handled by environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 請求失敗，狀態碼: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const jsonText = result.candidates[0].content.parts[0].text;
+                return JSON.parse(jsonText).pages;
+
+            } catch (error) {
+                console.error("生成故事時發生錯誤:", error);
+                loadingText.textContent = `生成故事失敗了... ${error.message}。請稍後再試一次。`;
+                progressBar.style.backgroundColor = '#ef4444'; // red-500
+                return null;
+            }
+        }
+
+        async function generateImage(prompt, index) {
+            loadingText.textContent = `第二步：正在繪製插圖... (${index + 1}/${totalPages})`;
+            
+            const fullPrompt = `${prompt}, 16:9 aspect ratio`;
+
+            const payload = {
+                instances: [{ prompt: fullPrompt }],
+                parameters: { "sampleCount": 1 }
+            };
+
+            try {
+                const apiKey = ""; // Leave empty
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 請求失敗，狀態碼: ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.predictions && result.predictions[0] && result.predictions[0].bytesBase64Encoded) {
+                    return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                } else {
+                    throw new Error("API 回應中沒有圖片資料");
+                }
+            } catch (error) {
+                console.error(`生成第 ${index + 1} 張圖片時發生錯誤:`, error);
+                return 'https://placehold.co/1280x720/f87171/ffffff?text=圖片生成失敗'; // Red placeholder
+            }
+        }
+
+        // --- UI Update Functions ---
+        function renderStorybook() {
+            storybookViewer.innerHTML = '';
+            storyPages.forEach((page, index) => {
+                const pageElement = document.createElement('div');
+                pageElement.id = `page-${index}`;
+                pageElement.className = `storybook-page w-full ${index === 0 ? 'page-visible' : 'page-hidden'}`;
+                
+                pageElement.innerHTML = `
+                    <div class="aspect-w-16 aspect-h-9 mb-4 rounded-lg overflow-hidden shadow-md border-2 border-amber-100">
+                        <img src="${page.imageUrl}" alt="故事插圖 ${index + 1}" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-xl md:text-2xl leading-relaxed text-slate-700 p-2">${page.paragraph}</p>
+                    <div class="flex items-center justify-center gap-4 mt-4">
+                        <button onclick="speak('${page.paragraph.replace(/'/g, "\\'")}')" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-full flex items-center gap-2 transition-transform transform hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            <span>朗讀故事</span>
+                        </button>
+                        <a href="${page.imageUrl}" download="story_page_${index + 1}.png" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full flex items-center gap-2 transition-transform transform hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            <span>下載圖片</span>
+                        </a>
+                    </div>
+                `;
+                storybookViewer.appendChild(pageElement);
+            });
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            pageIndicator.textContent = `第 ${currentPageIndex + 1} / ${totalPages} 頁`;
+            prevBtn.disabled = currentPageIndex === 0;
+            nextBtn.disabled = currentPageIndex === totalPages - 1;
+
+            document.querySelectorAll('.storybook-page').forEach((page, index) => {
+                if (index === currentPageIndex) {
+                    page.classList.remove('page-hidden');
+                    page.classList.add('page-visible');
+                } else {
+                    page.classList.remove('page-visible');
+                    page.classList.add('page-hidden');
+                }
+            });
+        }
+
+        // --- Event Handlers ---
+        generateBtn.addEventListener('click', async () => {
+            const theme = storyThemeInput.value.trim();
+            if (!theme) {
+                // Using a custom modal/message box instead of alert()
+                const messageBox = document.createElement('div');
+                messageBox.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
+                messageBox.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                        <p class="text-lg font-semibold mb-4">請先輸入故事主題！</p>
+                        <button id="close-message" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">確定</button>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
+                document.getElementById('close-message').addEventListener('click', () => {
+                    document.body.removeChild(messageBox);
+                });
+                return;
+            }
+
+            // Reset state
+            storyPages = [];
+            currentPageIndex = 0;
+            synth.cancel();
+
+            // Update UI
+            inputSection.classList.add('hidden');
+            storybookContainer.classList.add('hidden');
+            loadingSection.classList.remove('hidden');
+            progressBar.style.backgroundColor = '#4ade80'; // green-400
+            progressBar.style.width = '0%';
+
+            // Step 1: Generate story and prompts
+            const pagesData = await generateStoryAndPrompts(theme);
+            if (!pagesData || pagesData.length !== totalPages) {
+                loadingText.textContent = '無法生成完整的故事，請檢查主控台錯誤或稍後再試。';
+                progressBar.style.backgroundColor = '#ef4444'; // red-500
+                // Show input again after a delay
+                setTimeout(() => {
+                    inputSection.classList.remove('hidden');
+                    loadingSection.classList.add('hidden');
+                }, 4000);
+                return;
+            }
+            storyPages = pagesData;
+            progressBar.style.width = '10%';
+
+            // Step 2: Generate images
+            for (let i = 0; i < totalPages; i++) {
+                const imageUrl = await generateImage(storyPages[i].prompt, i);
+                storyPages[i].imageUrl = imageUrl;
+                const progressPercentage = 10 + ((i + 1) / totalPages) * 90;
+                progressBar.style.width = `${progressPercentage}%`;
+            }
+
+            // Step 3: Render results
+            loadingSection.classList.add('hidden');
+            storybookContainer.classList.remove('hidden');
+            inputSection.classList.remove('hidden'); // Show input again for new story
+            renderStorybook();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                updateNavigation();
+                synth.cancel();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPageIndex < totalPages - 1) {
+                currentPageIndex++;
+                updateNavigation();
+                synth.cancel();
+            }
+        });
+
+    </script>
+</body>
+</html>
