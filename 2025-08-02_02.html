@@ -25,7 +25,7 @@
         // 主應用程式組件
         const App = () => {
             // 從 React 全局物件中解構 useState 和 useEffect
-            const { useState, useEffect } = React;
+            const { useState, useEffect, useRef } = React; // 新增 useRef
 
             // 狀態變數：儲存天氣資料
             const [weatherData, setWeatherData] = useState(null);
@@ -33,10 +33,16 @@
             const [loading, setLoading] = useState(true);
             // 狀態變數：儲存錯誤訊息
             const [error, setError] = useState(null);
+            // 新增狀態變數：儲存現在時刻
+            const [currentTime, setCurrentTime] = useState('');
+
+            // 用於整點報時的 Ref 和狀態
+            const lastChimeHourRef = useRef(-1); // 使用 useRef 儲存上次報時的小時，避免重複報時
+            const chimeAudioRef = useRef(null); // 使用 useRef 儲存音訊元素
 
             // OpenWeatherMap API Key
             // 請在這裡填入你的 OpenWeatherMap API Key
-            const API_KEY = "c3a279983235d57dc69818ffffe9a265";
+            const API_KEY = "5c1b59a469442aded9e7f3e5e7e24625";
 
             // 高雄市小港區漢民國小的近似經緯度
             const LATITUDE = 22.569146;
@@ -137,6 +143,57 @@
                 return () => clearInterval(intervalId);
             }, [API_KEY]); // 當 API_KEY 改變時重新執行
 
+            // 新增 useEffect 鉤子來更新現在時刻和處理整點報時
+            useEffect(() => {
+                // 初始化音訊元素（只執行一次）
+                if (!chimeAudioRef.current) {
+                    chimeAudioRef.current = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3');
+                    chimeAudioRef.current.volume = 0.7; // 設定報時音量
+                }
+
+                const updateCurrentTimeAndChime = () => {
+                    const now = new Date();
+                    const currentHour = now.getHours();
+                    const currentMinute = now.getMinutes();
+                    const currentSecond = now.getSeconds();
+
+                    // 更新現在時刻顯示
+                    setCurrentTime(now.toLocaleString('zh-TW', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).replace(/\//g, '-'));
+
+                    // 整點報時邏輯：在每個小時的開始（例如 00 分 00 秒到 05 秒之間）播放
+                    // 並且確保每個小時只報時一次
+                    if (currentMinute === 0 && currentSecond >= 0 && currentSecond < 5) {
+                        if (currentHour !== lastChimeHourRef.current) {
+                            if (chimeAudioRef.current) {
+                                chimeAudioRef.current.play().catch(e => {
+                                    console.error("播放報時音效失敗:", e);
+                                    // 提示使用者需要互動才能播放音效
+                                    setError("音效可能因瀏覽器政策被阻擋，請點擊頁面任意處啟用音效。");
+                                });
+                            }
+                            lastChimeHourRef.current = currentHour; // 更新上次報時的小時
+                        }
+                    } else if (currentMinute === 59 && currentSecond > 55) {
+                        // 在每個小時結束前重置 lastChimeHourRef，以便下個小時能再次報時
+                        lastChimeHourRef.current = -1;
+                    }
+                };
+
+                updateCurrentTimeAndChime(); // 首次載入時更新
+                const timeIntervalId = setInterval(updateCurrentTimeAndChime, 1000); // 每秒更新
+
+                // 清理函數：在組件卸載時清除定時器
+                return () => clearInterval(timeIntervalId);
+            }, []); // 空依賴陣列表示只在組件掛載和卸載時執行
+
             // 載入中狀態顯示
             if (loading) {
                 return (
@@ -152,6 +209,11 @@
                     <div className="flex items-center justify-center min-h-screen bg-red-100">
                         <div className="text-xl font-semibold text-red-700 p-4 rounded-lg shadow-md bg-white">
                             錯誤: {error}
+                            {error.includes("瀏覽器政策") && (
+                                <p className="text-sm mt-2 text-gray-600">
+                                    請點擊頁面任意處或音訊播放器以啟用音效。
+                                </p>
+                            )}
                         </div>
                     </div>
                 );
@@ -175,6 +237,11 @@
                         <h2 className="text-2xl sm:text-3xl font-bold text-blue-700 text-center mb-6">
                             高雄市小港區漢民國小週邊即時天氣
                         </h2>
+
+                        {/* 現在時刻顯示 */}
+                        <div className="text-center text-xl sm:text-2xl font-semibold text-gray-700 mb-4">
+                            現在時刻：<span className="font-bold text-blue-600">{currentTime}</span>
+                        </div>
 
                         <div className={`text-center text-2xl sm:text-3xl font-extrabold mb-5 py-2 rounded-lg ${
                             weatherData.isRaining ? 'text-blue-600 bg-blue-50' : 'text-red-600 bg-red-50'
@@ -210,7 +277,23 @@
                         </div>
 
                         <div className="text-sm sm:text-base text-gray-500 text-center mt-6 pt-4 border-t border-gray-200">
-                            更新時間：<span className="font-medium">{weatherData.timestamp}</span>
+                            天氣資料更新時間：<span className="font-medium">{weatherData.timestamp}</span>
+                        </div>
+
+                        {/* 背景音樂控制 */}
+                        <div className="mt-6 text-center">
+                            <audio controls loop>
+                                {/* 請在這裡替換成您自己的背景音樂檔案路徑 */}
+                                {/* 範例: <source src="your_background_music.mp3" type="audio/mpeg"> */}
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+                                您的瀏覽器不支援音訊元素。
+                            </audio>
+                            <p className="text-xs text-gray-400 mt-2">
+                                (背景音樂：請替換為您自己的音樂檔案路徑，目前為範例音樂)
+                            </p>
+                             <p className="text-xs text-red-500 mt-2">
+                                提醒：音效可能因瀏覽器自動播放政策被阻擋，請點擊頁面任意處或音訊播放器以啟用音效。
+                            </p>
                         </div>
                     </div>
                 </div>
