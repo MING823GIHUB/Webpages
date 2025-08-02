@@ -256,17 +256,18 @@
                             現在時刻：<span className="font-bold text-blue-600">{currentTime}</span>
                         </div>
 
+                        {/* 天氣狀態顯示：下雨顯示紅色，不下雨顯示綠色 */}
                         <div className={`text-center text-2xl sm:text-3xl font-extrabold mb-5 py-2 rounded-lg ${
-                            weatherData.isRaining ? 'text-blue-600 bg-blue-50' : 'text-red-600 bg-red-50'
+                            weatherData.isRaining ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'
                         }`}>
                             {weatherData.isRaining ? '目前正在下雨！' : '目前不會下雨！'}
                         </div>
 
                         <div className="space-y-3 text-lg sm:text-xl text-gray-800">
-                            {/* 天氣狀況換行調整 */}
-                            <p className="flex flex-col items-start pb-2 border-b border-gray-200">
-                                <span className="font-semibold text-gray-600 mb-1">天氣狀況：</span>
-                                <span className="text-right w-full">{weatherData.condition}</span>
+                            {/* 天氣狀況不再強制換行，恢復為單行顯示 */}
+                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600">天氣狀況：</span>
+                                <span>{weatherData.condition}</span>
                             </p>
                             <p className="flex justify-between items-center pb-2 border-b border-gray-200">
                                 <span className="font-semibold text-gray-600">溫度：</span>
@@ -307,12 +308,12 @@
                         {/* 背景音樂控制 */}
                         <div className="mt-6 text-center">
                             <audio controls loop>
-                                {/* 更換為柔和的音樂檔案路徑 */}
-                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg" />
+                                {/* 更換為柔和的古典音樂檔案路徑 */}
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" type="audio/mpeg" />
                                 您的瀏覽器不支援音訊元素。
                             </audio>
                             <p className="text-xs text-gray-400 mt-2">
-                                (背景音樂：已更換為較柔和的範例音樂)
+                                (背景音樂：已更換為較柔和的古典範例音樂)
                             </p>
                              <p className="text-xs text-red-500 mt-2">
                                 提醒：音效可能因瀏覽器自動播放政策被阻擋，請點擊頁面任意處或音訊播放器以啟用音效。
