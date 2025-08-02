@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄市小港區漢民國小即時天氣</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- 載入 Babel，用於轉換 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* 自訂字體，確保中文字體顯示正常 */
+        body {
+            font-family: 'Inter', 'Noto Sans CJK TC', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // 主應用程式組件
+        const App = () => {
+            // 從 React 全局物件中解構 useState 和 useEffect
+            const { useState, useEffect } = React;
+
+            // 狀態變數：儲存天氣資料
+            const [weatherData, setWeatherData] = useState(null);
+            // 狀態變數：儲存載入狀態
+            const [loading, setLoading] = useState(true);
+            // 狀態變數：儲存錯誤訊息
+            const [error, setError] = useState(null);
+
+            // OpenWeatherMap API Key
+            // 請在這裡填入你的 OpenWeatherMap API Key
+            const API_KEY = "5c1b59a469442aded9e7f3e5e7e24625";
+
+            // 高雄市小港區漢民國小的近似經緯度
+            const LATITUDE = 22.569146;
+            const LONGITUDE = 120.334057;
+
+            // 使用 useEffect 鉤子在組件載入時獲取天氣資料
+            useEffect(() => {
+                const fetchWeatherData = async () => {
+                    if (!API_KEY) {
+                        setError("請在程式碼中填入你的 OpenWeatherMap API Key。");
+                        setLoading(false);
+                        return;
+                    }
+
+                    // OpenWeatherMap API 網址
+                    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=metric&lang=zh_tw`;
+
+                    try {
+                        // 嘗試進行 API 呼叫 (包含指數退避機制)
+                        let response;
+                        let data;
+                        let retries = 0;
+                        const MAX_RETRIES = 5;
+                        const BASE_DELAY = 1000; // 1 second
+
+                        while (retries < MAX_RETRIES) {
+                            response = await fetch(apiUrl);
+                            if (response.ok) {
+                                data = await response.json();
+                                break; // Success, exit loop
+                            } else if (response.status === 429) { // Too Many Requests
+                                const delay = BASE_DELAY * Math.pow(2, retries);
+                                console.warn(`API Rate limit hit. Retrying in ${delay / 1000} seconds...`);
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                retries++;
+                            } else if (response.status === 401) { // Unauthorized error
+                                throw new Error("API Key 無效或尚未啟用，請檢查您的 OpenWeatherMap API Key。");
+                            }
+                            else {
+                                // Other HTTP errors
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                        }
+
+                        if (!response.ok) {
+                            throw new Error(`無法獲取天氣資料: ${response.statusText}`);
+                        }
+
+                        // 處理 API 回傳的資料
+                        const weatherCondition = data.weather[0].description;
+                        const temperature = data.main.temp.toFixed(1); // 溫度取一位小數
+                        const humidity = data.main.humidity;
+                        const windSpeed = (data.wind.speed * 3.6).toFixed(1); // 從 m/s 轉換為 km/h
+                        const windDeg = data.wind.deg;
+
+                        // 判斷風向
+                        const getWindDirection = (deg) => {
+                            const directions = ['北', '東北', '東', '東南', '南', '西南', '西', '西北'];
+                            const index = Math.round((deg % 360) / 45);
+                            return directions[index % 8];
+                        };
+
+                        // 判斷是否下雨 (簡化判斷，可根據需求擴展)
+                        const isRaining = data.weather[0].main === 'Rain' || data.weather[0].main === 'Drizzle';
+                        const precipitationAmount = isRaining ? "有降水" : "0.0 mm"; // OpenWeatherMap current data doesn't directly provide current mm
+
+                        setWeatherData({
+                            condition: weatherCondition,
+                            temperature: `${temperature}°C`,
+                            humidity: `${humidity}%`,
+                            precipitation: precipitationAmount,
+                            windSpeed: `${windSpeed} 公里/小時`,
+                            windDirection: `${getWindDirection(windDeg)} (${windDeg}°)`,
+                            isRaining: isRaining,
+                            timestamp: new Date().toLocaleString('zh-TW', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hour12: false
+                            }).replace(/\//g, '-')
+                        });
+                    } catch (err) {
+                        console.error("獲取天氣資料失敗:", err);
+                        setError(`無法獲取天氣資料，請稍後再試。錯誤: ${err.message}`);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                fetchWeatherData();
+                // 每 5 分鐘更新一次資料
+                const intervalId = setInterval(fetchWeatherData, 300000); // 300000 毫秒 = 5 分鐘
+
+                // 清理函數：在組件卸載時清除定時器
+                return () => clearInterval(intervalId);
+            }, [API_KEY]); // 當 API_KEY 改變時重新執行
+
+            // 載入中狀態顯示
+            if (loading) {
+                return (
+                    <div className="flex items-center justify-center min-h-screen bg-blue-50">
+                        <div className="text-xl font-semibold text-blue-700">載入中...</div>
+                    </div>
+                );
+            }
+
+            // 錯誤狀態顯示
+            if (error) {
+                return (
+                    <div className="flex items-center justify-center min-h-screen bg-red-100">
+                        <div className="text-xl font-semibold text-red-700 p-4 rounded-lg shadow-md bg-white">
+                            錯誤: {error}
+                        </div>
+                    </div>
+                );
+            }
+
+            // 當沒有天氣資料時 (例如 API Key 錯誤或首次載入失敗)
+            if (!weatherData) {
+                return (
+                    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                        <div className="text-xl font-semibold text-gray-700 p-4 rounded-lg shadow-md bg-white">
+                            無法顯示天氣資料。請檢查您的 API Key 或稍後再試。
+                        </div>
+                    </div>
+                );
+            }
+
+            // 渲染天氣資訊
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-blue-50 font-inter">
+                    <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 max-w-md w-full border-b-4 border-blue-500">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-blue-700 text-center mb-6">
+                            高雄市小港區漢民國小週邊即時天氣
+                        </h2>
+
+                        <div className={`text-center text-2xl sm:text-3xl font-extrabold mb-5 py-2 rounded-lg ${
+                            weatherData.isRaining ? 'text-blue-600 bg-blue-50' : 'text-red-600 bg-red-50'
+                        }`}>
+                            {weatherData.isRaining ? '目前正在下雨！' : '目前不會下雨！'}
+                        </div>
+
+                        <div className="space-y-3 text-lg sm:text-xl text-gray-800">
+                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600">天氣狀況：</span>
+                                <span>{weatherData.condition}</span>
+                            </p>
+                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600">溫度：</span>
+                                <span>{weatherData.temperature}</span>
+                            </p>
+                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600">相對濕度：</span>
+                                <span>{weatherData.humidity}</span>
+                            </p>
+                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600">降水量：</span>
+                                <span>{weatherData.precipitation}</span>
+                            </p>
+                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600">風速：</span>
+                                <span>{weatherData.windSpeed}</span>
+                            </p>
+                            <p className="flex justify-between items-center">
+                                <span className="font-semibold text-gray-600">風向：</span>
+                                <span>{weatherData.windDirection}</span>
+                            </p>
+                        </div>
+
+                        <div className="text-sm sm:text-base text-gray-500 text-center mt-6 pt-4 border-t border-gray-200">
+                            更新時間：<span className="font-medium">{weatherData.timestamp}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 將 React 應用程式渲染到 HTML 頁面中
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
