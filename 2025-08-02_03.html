@@ -16,6 +16,8 @@
         body {
             font-family: 'Inter', 'Noto Sans CJK TC', sans-serif;
         }
+        /* 由於瀏覽器安全限制，無法完全禁止使用者檢視原始碼。
+           此為前端網頁，所有程式碼最終都會載入至使用者的瀏覽器。 */
     </style>
 </head>
 <body>
@@ -25,7 +27,7 @@
         // 主應用程式組件
         const App = () => {
             // 從 React 全局物件中解構 useState 和 useEffect
-            const { useState, useEffect, useRef, useCallback } = React; // 新增 useCallback
+            const { useState, useEffect, useRef, useCallback } = React;
 
             // 狀態變數：儲存天氣資料
             const [weatherData, setWeatherData] = useState(null);
@@ -208,7 +210,7 @@
             // 載入中狀態顯示
             if (loading) {
                 return (
-                    <div className="flex items-center justify-center min-h-screen bg-blue-50">
+                    <div className="flex items-center justify-center min-h-screen bg-gray-50"> {/* 更改背景色 */}
                         <div className="text-xl font-semibold text-blue-700">載入中...</div>
                     </div>
                 );
@@ -243,7 +245,7 @@
 
             // 渲染天氣資訊
             return (
-                <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-blue-50 font-inter">
+                <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gray-50 font-inter"> {/* 更改背景色 */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 max-w-md w-full border-b-4 border-blue-500">
                         <h2 className="text-2xl sm:text-3xl font-bold text-blue-700 text-center mb-6">
                             屏東縣東港鎮和美街週邊即時天氣
@@ -261,9 +263,10 @@
                         </div>
 
                         <div className="space-y-3 text-lg sm:text-xl text-gray-800">
-                            <p className="flex justify-between items-center pb-2 border-b border-gray-200">
-                                <span className="font-semibold text-gray-600">天氣狀況：</span>
-                                <span>{weatherData.condition}</span>
+                            {/* 天氣狀況換行調整 */}
+                            <p className="flex flex-col items-start pb-2 border-b border-gray-200">
+                                <span className="font-semibold text-gray-600 mb-1">天氣狀況：</span>
+                                <span className="text-right w-full">{weatherData.condition}</span>
                             </p>
                             <p className="flex justify-between items-center pb-2 border-b border-gray-200">
                                 <span className="font-semibold text-gray-600">溫度：</span>
@@ -304,13 +307,12 @@
                         {/* 背景音樂控制 */}
                         <div className="mt-6 text-center">
                             <audio controls loop>
-                                {/* 請在這裡替換成您自己的背景音樂檔案路徑 */}
-                                {/* 範例: <source src="your_background_music.mp3" type="audio/mpeg"> */}
-                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+                                {/* 更換為柔和的音樂檔案路徑 */}
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg" />
                                 您的瀏覽器不支援音訊元素。
                             </audio>
                             <p className="text-xs text-gray-400 mt-2">
-                                (背景音樂：請替換為您自己的音樂檔案路徑，目前為範例音樂)
+                                (背景音樂：已更換為較柔和的範例音樂)
                             </p>
                              <p className="text-xs text-red-500 mt-2">
                                 提醒：音效可能因瀏覽器自動播放政策被阻擋，請點擊頁面任意處或音訊播放器以啟用音效。
