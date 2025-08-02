@@ -25,7 +25,7 @@
         // 主應用程式組件
         const App = () => {
             // 從 React 全局物件中解構 useState 和 useEffect
-            const { useState, useEffect, useRef } = React; // 新增 useRef
+            const { useState, useEffect, useRef, useCallback } = React; // 新增 useCallback
 
             // 狀態變數：儲存天氣資料
             const [weatherData, setWeatherData] = useState(null);
@@ -48,100 +48,106 @@
             const LATITUDE = 22.569146;
             const LONGITUDE = 120.334057;
 
-            // 使用 useEffect 鉤子在組件載入時獲取天氣資料
+            // 獲取天氣資料的函數，使用 useCallback 包裹以優化性能
+            const fetchWeatherData = useCallback(async () => {
+                if (!API_KEY) {
+                    setError("請在程式碼中填入你的 OpenWeatherMap API Key。");
+                    setLoading(false);
+                    return;
+                }
+
+                setLoading(true); // 開始獲取資料時顯示載入中
+                setError(null); // 清除之前的錯誤訊息
+
+                // OpenWeatherMap API 網址
+                const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=metric&lang=zh_tw`;
+
+                try {
+                    // 嘗試進行 API 呼叫 (包含指數退避機制)
+                    let response;
+                    let data;
+                    let retries = 0;
+                    const MAX_RETRIES = 5;
+                    const BASE_DELAY = 1000; // 1 second
+
+                    while (retries < MAX_RETRIES) {
+                        response = await fetch(apiUrl);
+                        if (response.ok) {
+                            data = await response.json();
+                            break; // Success, exit loop
+                        } else if (response.status === 429) { // Too Many Requests
+                            const delay = BASE_DELAY * Math.pow(2, retries);
+                            console.warn(`API Rate limit hit. Retrying in ${delay / 1000} seconds...`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            retries++;
+                        } else if (response.status === 401) { // Unauthorized error
+                            // 更明確的錯誤訊息
+                            throw new Error("API Key 無效或尚未啟用。請確認您的 OpenWeatherMap API Key 是否正確且已啟用。");
+                        }
+                        else {
+                            // Other HTTP errors
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`無法獲取天氣資料: ${response.statusText}`);
+                    }
+
+                    // 處理 API 回傳的資料
+                    const weatherCondition = data.weather[0].description;
+                    const temperature = data.main.temp.toFixed(1); // 溫度取一位小數
+                    const humidity = data.main.humidity;
+                    const windSpeed = (data.wind.speed * 3.6).toFixed(1); // 從 m/s 轉換為 km/h
+                    const windDeg = data.wind.deg;
+
+                    // 判斷風向
+                    const getWindDirection = (deg) => {
+                        const directions = ['北', '東北', '東', '東南', '南', '西南', '西', '西北'];
+                        const index = Math.round((deg % 360) / 45);
+                        return directions[index % 8];
+                    };
+
+                    // 判斷是否下雨 (簡化判斷，可根據需求擴展)
+                    const isRaining = data.weather[0].main === 'Rain' || data.weather[0].main === 'Drizzle';
+                    const precipitationAmount = isRaining ? "有降水" : "0.0 mm"; // OpenWeatherMap current data doesn't directly provide current mm
+
+                    setWeatherData({
+                        condition: weatherCondition,
+                        temperature: `${temperature}°C`,
+                        humidity: `${humidity}%`,
+                        precipitation: precipitationAmount,
+                        windSpeed: `${windSpeed} 公里/小時`,
+                        windDirection: `${getWindDirection(windDeg)} (${windDeg}°)`,
+                        isRaining: isRaining,
+                        timestamp: new Date().toLocaleString('zh-TW', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        }).replace(/\//g, '-')
+                    });
+                } catch (err) {
+                    console.error("獲取天氣資料失敗:", err);
+                    setError(`無法獲取天氣資料，請稍後再試。錯誤: ${err.message}`);
+                } finally {
+                    setLoading(false);
+                }
+            }, [API_KEY]); // 依賴 API_KEY
+
+            // 使用 useEffect 鉤子在組件載入時獲取天氣資料並設定自動更新
             useEffect(() => {
-                const fetchWeatherData = async () => {
-                    if (!API_KEY) {
-                        setError("請在程式碼中填入你的 OpenWeatherMap API Key。");
-                        setLoading(false);
-                        return;
-                    }
+                fetchWeatherData(); // 首次載入時立即獲取資料
 
-                    // OpenWeatherMap API 網址
-                    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=metric&lang=zh_tw`;
-
-                    try {
-                        // 嘗試進行 API 呼叫 (包含指數退避機制)
-                        let response;
-                        let data;
-                        let retries = 0;
-                        const MAX_RETRIES = 5;
-                        const BASE_DELAY = 1000; // 1 second
-
-                        while (retries < MAX_RETRIES) {
-                            response = await fetch(apiUrl);
-                            if (response.ok) {
-                                data = await response.json();
-                                break; // Success, exit loop
-                            } else if (response.status === 429) { // Too Many Requests
-                                const delay = BASE_DELAY * Math.pow(2, retries);
-                                console.warn(`API Rate limit hit. Retrying in ${delay / 1000} seconds...`);
-                                await new Promise(resolve => setTimeout(resolve, delay));
-                                retries++;
-                            } else if (response.status === 401) { // Unauthorized error
-                                throw new Error("API Key 無效或尚未啟用，請檢查您的 OpenWeatherMap API Key。");
-                            }
-                            else {
-                                // Other HTTP errors
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                        }
-
-                        if (!response.ok) {
-                            throw new Error(`無法獲取天氣資料: ${response.statusText}`);
-                        }
-
-                        // 處理 API 回傳的資料
-                        const weatherCondition = data.weather[0].description;
-                        const temperature = data.main.temp.toFixed(1); // 溫度取一位小數
-                        const humidity = data.main.humidity;
-                        const windSpeed = (data.wind.speed * 3.6).toFixed(1); // 從 m/s 轉換為 km/h
-                        const windDeg = data.wind.deg;
-
-                        // 判斷風向
-                        const getWindDirection = (deg) => {
-                            const directions = ['北', '東北', '東', '東南', '南', '西南', '西', '西北'];
-                            const index = Math.round((deg % 360) / 45);
-                            return directions[index % 8];
-                        };
-
-                        // 判斷是否下雨 (簡化判斷，可根據需求擴展)
-                        const isRaining = data.weather[0].main === 'Rain' || data.weather[0].main === 'Drizzle';
-                        const precipitationAmount = isRaining ? "有降水" : "0.0 mm"; // OpenWeatherMap current data doesn't directly provide current mm
-
-                        setWeatherData({
-                            condition: weatherCondition,
-                            temperature: `${temperature}°C`,
-                            humidity: `${humidity}%`,
-                            precipitation: precipitationAmount,
-                            windSpeed: `${windSpeed} 公里/小時`,
-                            windDirection: `${getWindDirection(windDeg)} (${windDeg}°)`,
-                            isRaining: isRaining,
-                            timestamp: new Date().toLocaleString('zh-TW', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hour12: false
-                            }).replace(/\//g, '-')
-                        });
-                    } catch (err) {
-                        console.error("獲取天氣資料失敗:", err);
-                        setError(`無法獲取天氣資料，請稍後再試。錯誤: ${err.message}`);
-                    } finally {
-                        setLoading(false);
-                    }
-                };
-
-                fetchWeatherData();
-                // 每 5 分鐘更新一次資料
-                const intervalId = setInterval(fetchWeatherData, 300000); // 300000 毫秒 = 5 分鐘
+                // 每 10 分鐘更新一次資料 (600000 毫秒)
+                const intervalId = setInterval(fetchWeatherData, 600000);
 
                 // 清理函數：在組件卸載時清除定時器
                 return () => clearInterval(intervalId);
-            }, [API_KEY]); // 當 API_KEY 改變時重新執行
+            }, [fetchWeatherData]); // 依賴 fetchWeatherData
 
             // 新增 useEffect 鉤子來更新現在時刻和處理整點報時
             useEffect(() => {
@@ -193,6 +199,11 @@
                 // 清理函數：在組件卸載時清除定時器
                 return () => clearInterval(timeIntervalId);
             }, []); // 空依賴陣列表示只在組件掛載和卸載時執行
+
+            // 手動更新按鈕的點擊處理函數
+            const handleManualUpdate = () => {
+                fetchWeatherData(); // 呼叫獲取天氣資料的函數
+            };
 
             // 載入中狀態顯示
             if (loading) {
@@ -278,6 +289,16 @@
 
                         <div className="text-sm sm:text-base text-gray-500 text-center mt-6 pt-4 border-t border-gray-200">
                             天氣資料更新時間：<span className="font-medium">{weatherData.timestamp}</span>
+                        </div>
+
+                        {/* 手動更新按鈕 */}
+                        <div className="mt-6 text-center">
+                            <button
+                                onClick={handleManualUpdate}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            >
+                                手動更新天氣
+                            </button>
                         </div>
 
                         {/* 背景音樂控制 */}
