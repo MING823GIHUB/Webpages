@@ -14,3 +14,5 @@
 ### https://ming823gihub.github.io/Webpages/2025-07-25_01.html
 ## AI 故事繪本產生器
 ### https://ming823gihub.github.io/Webpages/2025-07-25_02.html
+## AI教育應用工具箱 | 互動探索指南
+### https://ming823gihub.github.io/Webpages/2025-08-02_01.html
