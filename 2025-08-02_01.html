@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI教育應用工具箱 | 互動探索指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: "Soothing Slate & Indigo" - A calm and professional palette using slate grays for the base, indigo for primary actions and headings, and sky blue for highlights. This creates a focused, modern, and trustworthy aesthetic suitable for an educational technology topic. -->
+    <!-- Application Structure Plan: The SPA is designed as an "Interactive Toolkit" rather than a linear presentation. A sticky top navigation allows users to jump to any AI tool section immediately, promoting non-linear exploration. Key sections like "Canva AI" use interactive tabs to break down complex information into digestible pieces. A dedicated "Community Impact" section uses a bar chart to visualize growth metrics, making the data more engaging. This structure was chosen to transform the static report into a dynamic, user-driven resource, allowing educators to quickly find and understand the tools most relevant to them. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Community Growth (FB 2000, YT 1000). Goal: Compare & Inform. Viz/Method: Bar Chart. Interaction: Tooltips on hover. Justification: A bar chart provides an immediate visual comparison of growth metrics, which is more impactful than text alone. Library: Chart.js.
+        - Report Info: Canva AI's 5 Scenarios. Goal: Organize & Inform. Viz/Method: Interactive Tabs. Interaction: Click to reveal content for each scenario. Justification: Tabs break down the information, preventing a long list and encouraging active user engagement. Library/Method: Vanilla JS.
+        - Report Info: Vibe Coding Philosophy. Goal: Organize. Viz/Method: 3-column card layout. Interaction: Hover effects. Justification: Visually separates the three core principles for better readability and emphasis. Library/Method: HTML/Tailwind.
+        - Report Info: Speaker's Certifications & Stats. Goal: Inform. Viz/Method: Styled lists with Unicode icons (e.g., ★, ➤). Justification: Icons add visual cues and improve scannability. Library/Method: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+            color: #334155; /* slate-700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            color: #ffffff;
+            background-color: #4f46e5; /* indigo-600 */
+        }
+        .tab-button.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-slate-800 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">AI教育應用工具箱</h1>
+            <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">一份由吳奇老師策劃的互動指南，探索如何運用AI工具革新教育與創作。</p>
+        </div>
+    </header>
+
+    <!-- Sticky Navigation -->
+    <nav id="navbar" class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center space-x-2 md:space-x-4 py-3 overflow-x-auto">
+                <a href="#about" class="nav-link text-slate-600 hover:bg-slate-200 font-semibold px-4 py-2 rounded-full text-sm md:text-base">關於主編</a>
+                <a href="#impact" class="nav-link text-slate-600 hover:bg-slate-200 font-semibold px-4 py-2 rounded-full text-sm md:text-base">社群影響力</a>
+                <a href="#canva" class="nav-link text-slate-600 hover:bg-slate-200 font-semibold px-4 py-2 rounded-full text-sm md:text-base">Canva AI</a>
+                <a href="#vibe" class="nav-link text-slate-600 hover:bg-slate-200 font-semibold px-4 py-2 rounded-full text-sm md:text-base">Vibe Coding</a>
+                <a href="#tools" class="nav-link text-slate-600 hover:bg-slate-200 font-semibold px-4 py-2 rounded-full text-sm md:text-base">更多工具</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- About Section -->
+        <section id="about" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                <h2 class="text-3xl font-bold text-indigo-600 mb-6">關於主編：吳奇老師</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-lg">一位致力於探索認知語言學、語文教育與教育科技交集的教育創新者。</p>
+                        <ul class="space-y-3 text-slate-600">
+                            <li class="flex items-start"><span class="text-indigo-500 mr-3 text-xl">★</span><strong>服務單位：</strong>數位敘事力期刊 (FB/IG/YT)</li>
+                            <li class="flex items-start"><span class="text-indigo-500 mr-3 text-xl">★</span><strong>興趣領域：</strong>認知語言學、語文教育、教育科技</li>
+                            <li class="flex items-start"><span class="text-indigo-500 mr-3 text-xl">★</span><strong>身分轉變：</strong>暫時離開教育界進修，持續在社群分享與策展。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-3">專業認證與經歷</h3>
+                        <ul class="space-y-2 text-slate-600">
+                            <li class="flex items-center"><span class="text-sky-500 mr-3">➤</span>Google Certified Trainer</li>
+                            <li class="flex items-center"><span class="text-sky-500 mr-3">➤</span>Gemini 學院 教育專場 講師</li>
+                            <li class="flex items-center"><span class="text-sky-500 mr-3">➤</span>2024 AIT 教育創新論壇講者</li>
+                            <li class="flex items-center"><span class="text-sky-500 mr-3">➤</span>2025 教育AI素養論壇 策展人</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Impact Section -->
+        <section id="impact" class="mb-16 scroll-mt-24">
+             <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                <h2 class="text-3xl font-bold text-indigo-600 mb-2">社群影響力</h2>
+                <p class="text-center text-slate-500 mb-8">透過「數位敘事力期刊」平台，主編的分享已觸及廣大社群，以下是目前的成長數據。</p>
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Canva AI Section -->
+        <section id="canva" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                <h2 class="text-3xl font-bold text-indigo-600 mb-2">Canva AI：扭轉中華民國美學</h2>
+                <p class="text-slate-500 mb-8">本區塊將介紹如何運用Canva AI強大的設計功能，提升教材與專案的美感和互動性。您可以點擊下方不同場景，探索主編的實用技巧。</p>
+                
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-6" id="canva-tabs">
+                    <button data-tab="1" class="tab-button active text-sm md:text-base bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-full shadow-sm transition">設計素材</button>
+                    <button data-tab="2" class="tab-button text-sm md:text-base bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-full shadow-sm transition">尺寸適配</button>
+                    <button data-tab="3" class="tab-button text-sm md:text-base bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-full shadow-sm transition">輔助編輯</button>
+                    <button data-tab="4" class="tab-button text-sm md:text-base bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-full shadow-sm transition">呈現互動</button>
+                    <button data-tab="5" class="tab-button text-sm md:text-base bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-full shadow-sm transition">教育管理</button>
+                </div>
+
+                <div id="canva-content" class="mt-6 bg-slate-50 p-6 rounded-lg border min-h-[120px]">
+                    <div data-content="1" class="tab-content">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">1. 設計素材</h3>
+                        <p class="text-slate-600">快速獲取高品質範本與設計元素，大幅縮短從零到一的創作時間，讓教學材料更具吸引力。</p>
+                    </div>
+                    <div data-content="2" class="tab-content hidden">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">2. 尺寸適配調整</h3>
+                        <p class="text-slate-600">一鍵調整設計尺寸以適應不同的社群平台（如FB、IG）或文件格式，確保視覺呈現的一致性與專業性。</p>
+                    </div>
+                    <div data-content="3" class="tab-content hidden">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">3. 輔助設計編輯</h3>
+                        <p class="text-slate-600">利用AI去背、Magic Edit等功能，輕鬆處理圖像並將其作為可靈活運用的素材，極大提升編輯效率。</p>
+                    </div>
+                    <div data-content="4" class="tab-content hidden">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">4. 呈現策略與互動</h3>
+                        <p class="text-slate-600">提供便利的線上播放模式，並能結合畫筆工具進行即時註記與共享，增強遠距教學或線上報告的互動性。</p>
+                    </div>
+                    <div data-content="5" class="tab-content hidden">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">5. 教育管理模組</h3>
+                        <p class="text-slate-600">教育版用戶可以建立班級，進行設計作業的派送、收集與管理，簡化教學行政流程。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vibe Coding Section -->
+        <section id="vibe" class="mb-16 scroll-mt-24">
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                <h2 class="text-3xl font-bold text-indigo-600 mb-2">Vibe Coding：氛圍編程之道</h2>
+                <p class="text-slate-500 mb-8">一種強調直覺、彈性與容錯的程式設計哲學，旨在降低創作門檻，讓教育者能更自由地打造互動教材。其核心理念受道家思想啟發。</p>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-slate-50 p-6 rounded-lg border">
+                        <h3 class="font-semibold text-lg text-slate-800 mb-2">道可道，非常道</h3>
+                        <p class="text-slate-600 text-sm">氛圍編程不拘泥於特定框架或語法，鼓勵從實際教學需求出發，隨心創作。</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-lg border">
+                        <h3 class="font-semibold text-lg text-slate-800 mb-2">柔弱勝剛強</h3>
+                        <p class="text-slate-600 text-sm">擁抱試錯的過程，透過不斷的調整與迭代，讓專案在容錯中逐漸完善，而非追求一次到位。</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-lg border">
+                        <h3 class="font-semibold text-lg text-slate-800 mb-2">無為而治</h3>
+                        <p class="text-slate-600 text-sm">不需繁複的專案規劃，只要有想法就能開始。選擇順手的工具，專注於實現核心功能即可。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other Tools Section -->
+        <section id="tools" class="scroll-mt-24">
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                <h2 class="text-3xl font-bold text-indigo-600 mb-2">更多前沿AI工具</h2>
+                <p class="text-slate-500 mb-8">除了Canva與Vibe Coding，這裡還介紹了其他幾款能提升生產力與學習效率的AI工具，它們各自扮演著不同的輔助角色。</p>
+                <div class="space-y-8">
+                    <!-- Perplexity Comet -->
+                    <div class="p-6 rounded-lg bg-sky-50 border border-sky-200">
+                        <h3 class="text-2xl font-bold text-sky-700 mb-3">Perplexity Comet：AI時代下的瀏覽器</h3>
+                        <p class="text-slate-600 mb-4">將AI深度整合至瀏覽器核心，提供側邊欄助理、跨平台資料串接、自然語言搜尋等功能，打造全新的上網體驗。</p>
+                    </div>
+                    <!-- GPT Agent -->
+                    <div class="p-6 rounded-lg bg-violet-50 border border-violet-200">
+                        <h3 class="text-2xl font-bold text-violet-700 mb-3">GPT Agent & Study Mode：AI代理人與學習模式</h3>
+                        <p class="text-slate-600 mb-4">結合了自動化操作與深度研究的能力，適合處理重複性高的資料整理與研究任務，更像一個高效的「工讀生」而非單純的助理。</p>
+                    </div>
+                    <!-- NotebookLM -->
+                    <div class="p-6 rounded-lg bg-emerald-50 border border-emerald-200">
+                        <h3 class="text-2xl font-bold text-emerald-700 mb-3">NotebookLM Plus：第二大腦與知識轉移</h3>
+                        <p class="text-slate-600 mb-4">作為個人化的知識庫，能整合、分析上傳的資料，並根據您的知識內容生成摘要、問答或新想法，是理想的第二大腦與學習夥伴。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 mt-16 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 吳奇老師 & 數位敘事力期刊. All Rights Reserved.</p>
+            <p class="text-sm mt-2">此互動網頁由AI生成，旨在展示與探索AI在教育領域的應用。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Chart.js: Community Impact Chart ---
+            const ctx = document.getElementById('impactChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Facebook 追蹤', 'YouTube 訂閱'],
+                        datasets: [{
+                            label: '社群人數',
+                            data: [2000, 1000],
+                            backgroundColor: [
+                                'rgba(79, 70, 229, 0.7)', // indigo-600
+                                'rgba(56, 189, 248, 0.7)'  // sky-400
+                            ],
+                            borderColor: [
+                                'rgba(79, 70, 229, 1)',
+                                'rgba(56, 189, 248, 1)'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e2e8f0' // slate-200
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y} 人`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- Canva AI Tabs Interaction ---
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tab;
+
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        if (content.dataset.content === tab) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // --- Sticky Navbar Active Link Highlighting ---
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+
+</body>
+</html>
