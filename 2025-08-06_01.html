@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anthropic Claude 免費線上課程指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Cyan -->
+    <!-- Application Structure Plan: A single-page, top-down layout was chosen for simplicity and mobile-friendliness. The structure begins with a clear header, followed by key highlight cards for quick takeaways (audience, format). The core is an interactive course explorer with category filters (tabs) and a responsive grid of course cards. This allows users to immediately grasp the essentials and then dive into exploring courses based on their interests, which is more engaging and efficient than a static list. The flow is designed to guide the user from general information to specific actions (viewing a course). -->
+    <!-- Visualization & Content Choices: The source report is informational. The primary goal is to organize and inform. Instead of charts, I've used an interactive filtering system with course cards. Report Info: List of 6 courses -> Goal: Organize/Inform -> Presentation: Interactive card grid with filters -> Interaction: User clicks filter tabs (All, API, Protocol, etc.) to dynamically display relevant course cards. -> Justification: This transforms a static list into a small, explorable application, improving user engagement and making it easier to find relevant content. -> Library/Method: Vanilla JS for filtering logic, Tailwind CSS for layout and styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+        .tab-active {
+            background-color: #0891b2;
+            color: white;
+        }
+        .tab-inactive {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto max-w-5xl p-4 sm:p-6 md:p-8">
+
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-cyan-800 mb-2">Anthropic Claude 免費線上課程</h1>
+            <p class="text-lg text-slate-600">一個由 Anthropic Academy 提供的互動指南，幫助您找到適合的 AI 課程。</p>
+        </header>
+
+        <main>
+            <section id="highlights" class="mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 text-center">
+                        <div class="text-4xl mb-3">👥</div>
+                        <h3 class="font-bold text-lg mb-1">目標學員</h3>
+                        <p class="text-slate-600 text-sm">適合 AI 開發者、企業工程團隊及對 AI 有興趣的任何人。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 text-center">
+                        <div class="text-4xl mb-3">🎓</div>
+                        <h3 class="font-bold text-lg mb-1">語言與認證</h3>
+                        <p class="text-slate-600 text-sm">課程為全英文，完成後可獲得官方認證證書。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 text-center">
+                        <div class="text-4xl mb-3">💻</div>
+                        <h3 class="font-bold text-lg mb-1">學習平台</h3>
+                        <p class="text-slate-600 text-sm">所有課程均在 <a href="https://www.skilljar.com/" target="_blank" class="text-cyan-600 hover:underline font-semibold">Skilljar</a> 平台上進行。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="courses">
+                <div class="text-center mb-4">
+                     <h2 class="text-2xl font-bold mb-2">探索精選課程</h2>
+                     <p class="text-slate-600">點擊下方類別以篩選課程，或瀏覽所有推薦課程。</p>
+                </div>
+
+                <div id="course-filters" class="flex flex-wrap justify-center gap-2 mb-8">
+                    <button data-filter="all" class="filter-btn tab-active px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200">全部課程</button>
+                    <button data-filter="api" class="filter-btn tab-inactive px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200">API & 雲端</button>
+                    <button data-filter="protocol" class="filter-btn tab-inactive px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200">模型協議</button>
+                    <button data-filter="code" class="filter-btn tab-inactive px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200">程式碼應用</button>
+                </div>
+
+                <div id="course-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-6 border-t border-slate-200">
+            <p class="text-sm text-slate-500">
+                資訊來源：<a href="https://www.bnext.com.tw/article/84090/claude-free-course" target="_blank" class="text-cyan-600 hover:underline">數位時代BusinessNext</a>
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        const coursesData = [
+            {
+                title: "Claude with the Anthropic API",
+                description: "學習如何透過 Anthropic 官方 API 有效地使用 Claude 模型。",
+                link: "https://www.anthropic.com/learn/build-with-claude",
+                category: "api"
+            },
+            {
+                title: "Claude with Amazon Bedrock",
+                description: "探索如何在 Amazon Bedrock 雲端服務上整合與應用 Claude。",
+                link: "https://anthropic.skilljar.com/claude-in-amazon-bedrock",
+                category: "api"
+            },
+            {
+                title: "Claude with Google Cloud's Vertex AI",
+                description: "了解如何將 Claude 的強大功能與 Google Cloud Vertex AI 結合。",
+                link: "https://anthropic.skilljar.com/claude-with-google-vertex",
+                category: "api"
+            },
+            {
+                title: "Introduction to Model Context Protocol",
+                description: "為開發者介紹模型上下文協議（MCP）的基礎概念與入門。",
+                link: "https://anthropic.skilljar.com/introduction-to-model-context-protocol",
+                category: "protocol"
+            },
+            {
+                title: "Model Context Protocol: Advanced Topics",
+                description: "深入探討模型上下文協議（MCP）的進階主題與應用技巧。",
+                link: "https://anthropic.skilljar.com/model-context-protocol-advanced-topics",
+                category: "protocol"
+            },
+            {
+                title: "Claude Code in Action",
+                description: "透過實際的程式碼範例與案例，學習 Claude 的開發應用。",
+                link: "https://anthropic.skilljar.com/claude-code-in-action",
+                category: "code"
+            }
+        ];
+
+        const courseGrid = document.getElementById('course-grid');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        const renderCourses = (filter = 'all') => {
+            courseGrid.innerHTML = '';
+            const filteredCourses = filter === 'all' 
+                ? coursesData 
+                : coursesData.filter(course => course.category === filter);
+
+            filteredCourses.forEach(course => {
+                const courseCard = `
+                    <div class="course-card bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-transform duration-300 hover:scale-105">
+                        <div class="p-6 flex-grow">
+                            <h3 class="font-bold text-lg mb-2 text-cyan-900">${course.title}</h3>
+                            <p class="text-slate-600 text-sm">${course.description}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50">
+                            <a href="${course.link}" target="_blank" class="block w-full text-center bg-cyan-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors duration-200">
+                                前往課程
+                            </a>
+                        </div>
+                    </div>
+                `;
+                courseGrid.innerHTML += courseCard;
+            });
+        };
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                });
+                button.classList.add('tab-active');
+                button.classList.remove('tab-inactive');
+                
+                renderCourses(button.dataset.filter);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCourses();
+        });
+    </script>
+
+</body>
+</html>
