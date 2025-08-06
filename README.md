@@ -20,3 +20,5 @@
 #### https://ming823gihub.github.io/Webpages/2025-08-02_03.html
 ### Anthropic Claude 免費線上課程指南
 #### https://ming823gihub.github.io/Webpages/2025-08-06_01.html
+### Google AI 課程與多元平台資源
+#### https://ming823gihub.github.io/Webpages/2025-08-06_02.html
