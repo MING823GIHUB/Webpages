@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google AI 課程與多元平台資源</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Base: bg-stone-100, Accent: text-blue-600) -->
+    <!-- Application Structure Plan: A two-section SPA. Section 1 focuses on Google's AI courses, presented as an interactive card grid. Section 2 showcases other AI learning and resource platforms, also using an interactive card grid. A navigation bar at the top allows users to easily switch between these two distinct content areas, enhancing user exploration and organization of information. -->
+    <!-- Visualization & Content Choices: Google Courses: Report info (list of 9 courses) -> Goal (Inform/Access) -> Viz (Interactive HTML card grid) -> Interaction (Hover effect, click to open link) -> Justification (More engaging and organized than a list). Other Platforms: Report info (general concept of diverse platforms) -> Goal (Inform/Access) -> Viz (Interactive HTML card grid) -> Interaction (Hover effect, click to open link) -> Justification (Consistent with Google section, provides actionable links to external resources). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .nav-btn-active {
+            background-color: #2563eb;
+            color: white;
+        }
+        .nav-btn {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-900 mb-2 flex items-center justify-center">
+                <span class="mr-3 text-4xl">💡</span>AI 學習與資源探索
+            </h1>
+            <p class="text-stone-600 max-w-3xl mx-auto">本應用程式旨在呈現 Google 推出的一系列免費線上課程，涵蓋人工智慧 (AI)、生成式 AI 及相關技術，旨在幫助自學者從入門到精通，掌握關鍵技能，以應對快速發展的 AI 時代。同時，也為您整理了其他多元的 AI 學習與資源平台。</p>
+        </header>
+
+        <nav class="flex justify-center space-x-2 md:space-x-4 mb-8 md:mb-12">
+            <button id="nav-google" class="nav-btn nav-btn-active text-sm md:text-base font-medium py-2 px-4 rounded-full bg-white shadow-sm hover:bg-blue-100">🎓 Google AI 學習資源</button>
+            <button id="nav-other" class="nav-btn text-sm md:text-base font-medium py-2 px-4 rounded-full bg-white shadow-sm hover:bg-blue-100">🌐 其他 AI 相關資源</button>
+        </nav>
+
+        <main>
+            <section id="google-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-blue-800 flex items-center justify-center">
+                        <span class="mr-3 text-3xl">📚</span>Google 免費 AI 線上課程
+                    </h2>
+                    <p class="text-stone-600 mt-2">Google 提供了一系列涵蓋從入門到進階的 AI 課程，幫助您掌握關鍵技能。點擊下方卡片即可前往課程頁面。</p>
+                </div>
+                <div id="google-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+
+            <section id="other-platforms-section" class="hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-blue-800 flex items-center justify-center">
+                        <span class="mr-3 text-3xl">🌍</span>其他 AI 學習與資源平台
+                    </h2>
+                    <p class="text-stone-600 mt-2">除了 Google 之外，還有許多優秀的平台提供豐富的 AI 課程、資料集、競賽與產業洞察。探索這些資源，拓展您的 AI 知識領域。</p>
+                </div>
+                <div id="other-platforms-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-stone-200">
+            <p class="text-sm text-stone-500">資料來源：<a href="https://www.bnext.com.tw/article/83274/google-free-course-ai" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">數位時代</a></p>
+            <p class="text-xs text-stone-400 mt-2">此為根據來源報告創建的互動式網頁應用程式。</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const googleCoursesData = [
+                { title: '大型語言模型 (LLM) 入門', url: 'https://www.cloudskillsboost.google/courses/35174' },
+                { title: '生成式 AI 入門', url: 'https://www.cloudskillsboost.google/courses/35175' },
+                { title: '機器學習入門', url: 'https://www.cloudskillsboost.google/courses/35176' },
+                { title: 'Google Cloud 上的 AI 實踐', url: 'https://www.cloudskillsboost.google/courses/35177' },
+                { title: 'Google AI 基礎應用', url: 'https://www.cloudskillsboost.google/courses/35178' },
+                { title: '負責任的 AI 入門', url: 'https://www.cloudskillsboost.google/courses/35179' },
+                { title: '程式基礎知識', url: 'https://www.cloudskillsboost.google/courses/35180' },
+                { title: '雲端運算基礎課程', url: 'https://www.cloudskillsboost.google/courses/35181' },
+                { title: '如何使用 Vertex AI 設計有效的提示詞', url: 'https://www.cloudskillsboost.google/courses/35182' }
+            ];
+
+            const otherPlatformsData = [
+                { title: 'Coursera', description: '提供來自頂尖大學和企業的線上課程，涵蓋多種 AI 相關主題。', url: 'https://www.coursera.org/' },
+                { title: 'edX', description: '由麻省理工學院和哈佛大學創立，提供高品質的線上 AI 課程與學位。', url: 'https://www.edx.org/' },
+                { title: 'Kaggle', description: '全球最大的資料科學社群，提供資料集、程式碼、競賽與學習資源。', url: 'https://www.kaggle.com/' },
+                { title: 'Medium (AI Topics)', description: '匯集了大量關於 AI 技術、趨勢和應用的文章與部落格。', url: 'https://medium.com/tag/artificial-intelligence' }
+            ];
+
+            const googleCoursesGrid = document.getElementById('google-courses-grid');
+            googleCoursesData.forEach(course => {
+                const card = document.createElement('a');
+                card.href = course.url;
+                card.target = '_blank';
+                card.rel = 'noopener noreferrer';
+                card.className = 'block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300';
+                
+                const title = document.createElement('h3');
+                title.className = 'font-bold text-blue-900 mb-2 flex items-center'; // Added flex items-center
+                title.innerHTML = `<span class="mr-2 text-xl">📖</span>${course.title}`; // Added icon
+
+                const linkText = document.createElement('p');
+                linkText.className = 'text-sm text-blue-600 font-medium';
+                linkText.textContent = '前往課程 →';
+
+                card.appendChild(title);
+                card.appendChild(linkText);
+                googleCoursesGrid.appendChild(card);
+            });
+
+            const otherPlatformsGrid = document.getElementById('other-platforms-grid');
+            otherPlatformsData.forEach(platform => {
+                const card = document.createElement('a');
+                card.href = platform.url;
+                card.target = '_blank';
+                card.rel = 'noopener noreferrer';
+                card.className = 'block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300';
+                
+                const title = document.createElement('h3');
+                title.className = 'font-bold text-blue-900 mb-2';
+                title.textContent = platform.title;
+                
+                const description = document.createElement('p');
+                description.className = 'text-sm text-stone-600 mb-2';
+                description.textContent = platform.description;
+
+                const linkText = document.createElement('p');
+                linkText.className = 'text-sm text-blue-600 font-medium';
+                linkText.textContent = '前往平台 →';
+
+                card.appendChild(title);
+                card.appendChild(description);
+                card.appendChild(linkText);
+                otherPlatformsGrid.appendChild(card);
+            });
+            
+            const navGoogle = document.getElementById('nav-google');
+            const navOther = document.getElementById('nav-other');
+            const googleSection = document.getElementById('google-section');
+            const otherPlatformsSection = document.getElementById('other-platforms-section');
+
+            function switchTab(activeTab) {
+                if (activeTab === 'google') {
+                    googleSection.classList.remove('hidden');
+                    otherPlatformsSection.classList.add('hidden');
+                    navGoogle.classList.add('nav-btn-active');
+                    navOther.classList.remove('nav-btn-active');
+                } else {
+                    googleSection.classList.add('hidden');
+                    otherPlatformsSection.classList.remove('hidden');
+                    navOther.classList.add('nav-btn-active');
+                    navGoogle.classList.remove('nav-btn-active');
+                }
+            }
+
+            navGoogle.addEventListener('click', () => switchTab('google'));
+            navOther.addEventListener('click', () => switchTab('other'));
+
+            // Set initial tab
+            switchTab('google');
+        });
+    </script>
+</body>
+</html>
