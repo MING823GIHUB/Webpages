@@ -22,3 +22,5 @@
 #### https://ming823gihub.github.io/Webpages/2025-08-06_01.html
 ### Google AI 課程與多元平台資源
 #### https://ming823gihub.github.io/Webpages/2025-08-06_02.html
+### 六頂思考帽
+#### https://ming823gihub.github.io/Webpages/2025-08-07_01.html
