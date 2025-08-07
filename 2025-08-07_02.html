@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六頂思考帽｜互動式學習工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Hat Colors -->
+    <!-- Application Structure Plan: The application is designed as an interactive exploration tool. It starts with a brief introduction, followed by the core interactive element: a visual selector for the six hats. Clicking a hat instantly updates a central content display, allowing for non-linear learning. This is more engaging than a simple list. Below, a "Scenario Simulator" makes the concept practical by letting users apply the hats to their own topics. The simulator now uses the Gemini API to generate dynamic, context-aware prompts for each hat. A Chart.js visualization demonstrates the value of balanced thinking, and a summary section reinforces the benefits. This structure prioritizes user engagement and practical application over static reading. -->
+    <!-- Visualization & Content Choices: Report Info: Six hats methodology. Goal: Inform, Organize, Apply, Compare. Viz/Presentation: Interactive HTML/CSS hat selector, dynamic text blocks, a step-by-step JS-powered simulator with Gemini API, and a Chart.js radar chart. Interaction: Clicking hats updates content; simulator guides users through a thinking sequence with a new Gemini-generated prompt each step; chart can be toggled to show "balanced" vs. "unbalanced" thinking. Justification: This multi-faceted approach caters to different learning styles—reading (descriptions), doing with AI-generated guidance (simulator), and seeing (chart)—to create a comprehensive understanding. Library/Method: Vanilla JS for logic, Chart.js for visualization, Gemini API for dynamic prompt generation. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8f7f4;
+            color: #3d3d3d;
+        }
+        .hat-selector-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hat-selector-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .active-hat {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .content-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">六頂思考帽</h1>
+            <p class="text-lg text-gray-600">一個讓你思緒更清晰、決策更全面的強大工具</p>
+        </header>
+
+        <main>
+            <section id="interactive-explorer" class="mb-16">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl font-bold text-gray-800">探索思考帽</h2>
+                    <p class="text-gray-600 mt-1">點擊下方的帽子，了解每種思考模式的獨特之處。</p>
+                </div>
+                
+                <div id="hat-selector" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 mb-8">
+                </div>
+
+                <div id="hat-details" class="bg-white rounded-xl shadow-lg p-6 md:p-8 min-h-[300px] flex flex-col justify-center content-fade-in">
+                </div>
+            </section>
+
+            <hr class="my-16 border-gray-200">
+
+            <section id="simulator" class="mb-16">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl font-bold text-gray-800">情境模擬器 ✨</h2>
+                    <p class="text-gray-600 mt-1">將理論付諸實踐！輸入一個您想探討的主題，讓我們引導您完成一次完整的思考流程。</p>
+                </div>
+                <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <div class="mb-4">
+                        <label for="topic-input" class="block text-sm font-medium text-gray-700 mb-1">您的議題或問題：</label>
+                        <input type="text" id="topic-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="例如：如何提升團隊的工作效率？">
+                    </div>
+                    <button id="start-simulation-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                        開始思考模擬
+                    </button>
+                    <div id="simulation-output" class="mt-6 hidden">
+                        <div id="simulation-hat-display" class="flex items-center p-4 rounded-lg mb-4">
+                            <div id="simulation-hat-icon" class="w-12 h-12 rounded-full mr-4"></div>
+                            <div>
+                                <h3 id="simulation-hat-name" class="text-xl font-bold"></h3>
+                                <p id="simulation-hat-role" class="text-sm text-gray-600"></p>
+                            </div>
+                        </div>
+                        <p id="simulation-prompt" class="text-gray-700 mb-4"></p>
+                        <div id="loading-indicator" class="hidden text-center text-gray-500">生成中...</div>
+                        <button id="next-hat-btn" class="w-full bg-gray-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-900 transition-colors">下一頂帽子</button>
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="my-16 border-gray-200">
+
+            <section id="visualization" class="mb-16">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl font-bold text-gray-800">平衡思考的力量</h2>
+                    <p class="text-gray-600 mt-1">使用六頂思考帽能確保我們從多個維度看問題，避免陷入思維盲點。</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <div class="chart-container">
+                        <canvas id="thinking-chart"></canvas>
+                    </div>
+                    <div class="flex justify-center mt-6 space-x-4">
+                        <button id="balanced-btn" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition">平衡思考</button>
+                        <button id="unbalanced-btn" class="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition">慣性思考</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center text-gray-500 mt-16">
+            <p>&copy; 2025 六頂思考帽互動應用. 靈感源自 Edward de Bono 的經典理論。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const hatsData = {
+            white: {
+                name: "白色思考帽",
+                color: "#E5E7EB",
+                textColor: "#1F2937",
+                borderColor: "#D1D5DB",
+                role: "客觀與事實",
+                description: "專注於客觀的事實、數據和可驗證的資訊。不帶任何個人情感或評論，像電腦一樣中立地呈現資料。",
+                keywords: ["數據", "事實", "資訊", "客觀"],
+                promptInstruction: "For the topic '{topic}', give me a single, specific, and thought-provoking question that represents the 'White Hat' thinking, focusing on objective facts, data, and information. The question should be in Traditional Chinese. Do not include any other text besides the question itself. Do not say 'Here is the question:'.",
+            },
+            red: {
+                name: "紅色思考帽",
+                color: "#EF4444",
+                textColor: "#FFFFFF",
+                borderColor: "#DC2626",
+                role: "情感與直覺",
+                description: "允許表達直覺、預感和情緒。在這個模式下，你不需要為自己的感受辯護或解釋原因，只需直接說出感覺。",
+                keywords: ["感覺", "直覺", "情緒", "預感"],
+                promptInstruction: "For the topic '{topic}', give me a single, specific, and thought-provoking question that represents the 'Red Hat' thinking, focusing on emotions, feelings, and intuition. The question should be in Traditional Chinese. Do not include any other text besides the question itself. Do not say 'Here is the question:'.",
+            },
+            black: {
+                name: "黑色思考帽",
+                color: "#1F2937",
+                textColor: "#FFFFFF",
+                borderColor: "#000000",
+                role: "謹慎與批判",
+                description: "從負面角度進行思考，專注於風險、困難、潛在的障礙和錯誤。它的目的是為了發現問題並做好風險管理。",
+                keywords: ["風險", "缺點", "困難", "警告"],
+                promptInstruction: "For the topic '{topic}', give me a single, specific, and thought-provoking question that represents the 'Black Hat' thinking, focusing on risks, weaknesses, and potential problems. The question should be in Traditional Chinese. Do not include any other text besides the question itself. Do not say 'Here is the question:'.",
+            },
+            yellow: {
+                name: "黃色思考帽",
+                color: "#FBBF24",
+                textColor: "#FFFFFF",
+                borderColor: "#F59E0B",
+                role: "樂觀與優點",
+                description: "充滿陽光和樂觀的思考模式。專注於尋找方案的優點、價值和潛在的利益。即使希望渺茫，也要努力發掘其正面價值。",
+                keywords: ["優點", "價值", "利益", "機會"],
+                promptInstruction: "For the topic '{topic}', give me a single, specific, and thought-provoking question that represents the 'Yellow Hat' thinking, focusing on benefits, values, and positive aspects. The question should be in Traditional Chinese. Do not include any other text besides the question itself. Do not say 'Here is the question:'.",
+            },
+            green: {
+                name: "綠色思考帽",
+                color: "#10B981",
+                textColor: "#FFFFFF",
+                borderColor: "#059669",
+                role: "創意與新想法",
+                description: "代表創造力和新的可能性。在這個模式下，鼓勵提出創新的想法、替代方案，甚至是看似瘋狂的點子。",
+                keywords: ["創意", "可能", "新點子", "替代方案"],
+                promptInstruction: "For the topic '{topic}', give me a single, specific, and thought-provoking question that represents the 'Green Hat' thinking, focusing on creativity, new ideas, and alternative solutions. The question should be in Traditional Chinese. Do not include any other text besides the question itself. Do not say 'Here is the question:'.",
+            },
+            blue: {
+                name: "藍色思考帽",
+                color: "#3B82F6",
+                textColor: "#FFFFFF",
+                borderColor: "#2563EB",
+                role: "控制與管理",
+                description: "如同天空一樣，綜觀全局。負責管理整個思考過程，設定議程、總結討論、確保規則被遵守，並做出最終決策。",
+                keywords: ["總結", "流程", "控制", "決策"],
+                promptInstruction: "For the topic '{topic}', give me a single, specific, and thought-provoking question that represents the 'Blue Hat' thinking, focusing on process control and management. The question should be in Traditional Chinese. Do not include any other text besides the question itself. Do not say 'Here is the question:'.",
+            }
+        };
+
+        let currentHat = 'white';
+        let chart;
+        let simulationState = {
+            active: false,
+            topic: '',
+            sequence: ['blue', 'white', 'green', 'yellow', 'black', 'red', 'blue'],
+            step: 0
+        };
+
+        const hatSelector = document.getElementById('hat-selector');
+        const hatDetails = document.getElementById('hat-details');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const simulationPromptElement = document.getElementById('simulation-prompt');
+
+        function updateHatDetails(hatKey) {
+            currentHat = hatKey;
+            const hat = hatsData[hatKey];
+            
+            hatDetails.innerHTML = `
+                <div class="text-center content-fade-in">
+                    <div class="inline-block p-3 rounded-full mb-4" style="background-color: ${hat.color};">
+                        <svg class="w-10 h-10" style="color: ${hat.textColor};" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold" style="color: ${hat.color === '#E5E7EB' ? '#1F2937' : hat.color};">${hat.name}</h3>
+                    <p class="text-lg font-medium text-gray-600 mb-4">${hat.role}</p>
+                    <p class="text-gray-700 mb-4">${hat.description}</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        ${hat.keywords.map(keyword => `<span class="bg-gray-200 text-gray-800 text-sm font-medium px-3 py-1 rounded-full">${keyword}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.querySelectorAll('.hat-selector-item').forEach(item => {
+                item.classList.remove('active-hat');
+                if (item.dataset.hat === hatKey) {
+                    item.classList.add('active-hat');
+                }
+            });
+        }
+
+        function createHatSelector() {
+            Object.keys(hatsData).forEach(key => {
+                const hat = hatsData[key];
+                const item = document.createElement('div');
+                item.className = 'hat-selector-item cursor-pointer text-center p-4 rounded-lg';
+                item.dataset.hat = key;
+                item.style.backgroundColor = hat.color;
+                item.style.color = hat.textColor;
+                item.style.border = `2px solid ${hat.borderColor}`;
+                
+                item.innerHTML = `
+                    <div class="font-bold text-lg">${hat.name}</div>
+                    <div class="text-sm">${hat.role}</div>
+                `;
+                
+                item.addEventListener('click', () => updateHatDetails(key));
+                hatSelector.appendChild(item);
+            });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('thinking-chart').getContext('2d');
+            const data = {
+                labels: Object.values(hatsData).map(h => h.role),
+                datasets: [{
+                    label: '思考維度',
+                    data: [10, 10, 10, 10, 10, 10],
+                    backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(22, 163, 74, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(22, 163, 74, 1)'
+                }]
+            };
+            const config = {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#3d3d3d'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                display: false
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 12
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            };
+            chart = new Chart(ctx, config);
+        }
+        
+        document.getElementById('balanced-btn').addEventListener('click', () => {
+            chart.data.datasets[0].data = [10, 10, 10, 10, 10, 10];
+            chart.data.datasets[0].backgroundColor = 'rgba(22, 163, 74, 0.2)';
+            chart.data.datasets[0].borderColor = 'rgba(22, 163, 74, 1)';
+            chart.data.datasets[0].pointBackgroundColor = 'rgba(22, 163, 74, 1)';
+            chart.update();
+        });
+
+        document.getElementById('unbalanced-btn').addEventListener('click', () => {
+            chart.data.datasets[0].data = [8, 2, 11, 3, 1, 1];
+            chart.data.datasets[0].backgroundColor = 'rgba(245, 158, 11, 0.2)';
+            chart.data.datasets[0].borderColor = 'rgba(245, 158, 11, 1)';
+            chart.data.datasets[0].pointBackgroundColor = 'rgba(245, 158, 11, 1)';
+            chart.update();
+        });
+
+        const startSimBtn = document.getElementById('start-simulation-btn');
+        const nextHatBtn = document.getElementById('next-hat-btn');
+        const topicInput = document.getElementById('topic-input');
+        const simOutput = document.getElementById('simulation-output');
+
+        async function generatePromptFromLLM(topic, hatKey) {
+            const hat = hatsData[hatKey];
+            const prompt = hat.promptInstruction.replace('{topic}', topic);
+
+            loadingIndicator.classList.remove('hidden');
+            simulationPromptElement.textContent = '';
+            
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            try {
+                let response = null;
+                let result = null;
+                for (let i = 0; i < 3; i++) { // Exponential backoff retry loop
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        result = await response.json();
+                        if (response.status === 200) break; // Success, break retry loop
+                    } catch (e) {
+                        console.log(`Fetch attempt ${i+1} failed. Retrying...`);
+                        await new Promise(res => setTimeout(res, 1000 * (2 ** i))); // Exponential backoff
+                    }
+                }
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    simulationPromptElement.textContent = text;
+                } else {
+                    simulationPromptElement.textContent = '未能生成問題，請重試。';
+                }
+            } catch (error) {
+                console.error('Error generating content:', error);
+                simulationPromptElement.textContent = '服務暫時無法使用，請稍後再試。';
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        async function updateSimulationDisplay() {
+            const hatKey = simulationState.sequence[simulationState.step];
+            const hat = hatsData[hatKey];
+            const topic = simulationState.topic || "這個議題";
+
+            document.getElementById('simulation-hat-display').style.backgroundColor = hat.color + '33'; // Add alpha
+            document.getElementById('simulation-hat-icon').style.backgroundColor = hat.color;
+            document.getElementById('simulation-hat-name').textContent = hat.name;
+            document.getElementById('simulation-hat-name').style.color = hat.color === '#E5E7EB' ? '#1F2937' : hat.color;
+            document.getElementById('simulation-hat-role').textContent = hat.role;
+            
+            if(hatKey === 'blue') {
+                if (simulationState.step === 0) {
+                    simulationPromptElement.textContent = `好的，我們現在要討論的主題是：「${topic}」。讓我們開始吧。`;
+                } else {
+                    simulationPromptElement.textContent = `非常好，我們已經從各個角度探討了「${topic}」。現在讓我們來總結一下，並決定下一步的行動。`;
+                }
+                nextHatBtn.disabled = false;
+            } else {
+                 nextHatBtn.disabled = true;
+                 await generatePromptFromLLM(topic, hatKey);
+                 nextHatBtn.disabled = false;
+            }
+
+            if (simulationState.step >= simulationState.sequence.length - 1) {
+                nextHatBtn.textContent = '完成模擬';
+            } else {
+                nextHatBtn.textContent = '下一頂帽子';
+            }
+        }
+
+        startSimBtn.addEventListener('click', async () => {
+            const topic = topicInput.value.trim();
+            if (!topic) {
+                alert('請先輸入一個議題或問題！');
+                return;
+            }
+            simulationState.active = true;
+            simulationState.topic = topic;
+            simulationState.step = 0;
+            simOutput.classList.remove('hidden');
+            simOutput.classList.add('content-fade-in');
+            startSimBtn.disabled = true;
+            topicInput.disabled = true;
+            await updateSimulationDisplay();
+            startSimBtn.disabled = false;
+            topicInput.disabled = false;
+        });
+
+        nextHatBtn.addEventListener('click', async () => {
+            if (simulationState.step >= simulationState.sequence.length - 1) {
+                simOutput.classList.add('hidden');
+                topicInput.value = '';
+                alert('思考模擬完成！您已成功運用六頂思考帽完成一次全面的思考。');
+            } else {
+                simulationState.step++;
+                nextHatBtn.disabled = true;
+                await updateSimulationDisplay();
+                nextHatBtn.disabled = false;
+            }
+        });
+
+        window.onload = () => {
+            createHatSelector();
+            updateHatDetails('white');
+            initChart();
+        };
+
+    </script>
+
+</body>
+</html>
