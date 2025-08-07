@@ -24,3 +24,4 @@
 #### https://ming823gihub.github.io/Webpages/2025-08-06_02.html
 ### 六頂思考帽
 #### https://ming823gihub.github.io/Webpages/2025-08-07_01.html
+#### https://ming823gihub.github.io/Webpages/2025-08-07_02.html
