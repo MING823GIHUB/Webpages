@@ -27,3 +27,5 @@
 #### https://ming823gihub.github.io/Webpages/2025-08-07_02.html
 ### Gemini AI 滑塊拼圖遊戲
 #### https://ming823gihub.github.io/Webpages/2025-08-09_01.html
+### 日本抽選器
+#### https://ming823gihub.github.io/Webpages/2025-08-09_02.html
