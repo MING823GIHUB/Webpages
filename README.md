@@ -25,3 +25,5 @@
 ### 六頂思考帽
 #### https://ming823gihub.github.io/Webpages/2025-08-07_01.html
 #### https://ming823gihub.github.io/Webpages/2025-08-07_02.html
+### Gemini AI 滑塊拼圖遊戲
+#### https://ming823gihub.github.io/Webpages/2025-08-09_01.html
