@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正向管教教練GPT案例解析</title>
+    <!-- 引入 Inter 字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* 自定義過渡效果 */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 2000px; /* 設置一個足夠大的值 */
+            transition: max-height 0.5s ease-in;
+        }
+        .rotated {
+            transform: rotate(90deg);
+            transition: transform 0.3s ease;
+        }
+        /* 定義滾動條樣式，讓長文本區塊更美觀 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #9ca3af;
+            border-radius: 4px;
+            border: 2px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8 md:p-12 text-gray-800">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden p-6 sm:p-8 md:p-10 border border-gray-200">
+        <!-- 標題區塊 -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-blue-700">正向管教教練GPT</h1>
+            <p class="text-xl mt-2 font-medium">高一學生違規案例三層式解析</p>
+            <div class="mt-4 text-sm text-gray-500">
+                <a href="https://www.facebook.com/yungyenchen/posts/pfbid02PW8EmDiVDjaBpygvYZGXYrDHZesWAhAhDfDoNANv4Jp9FKSdLAjp6rgTLFX9VVMXl" target="_blank" class="hover:underline">
+                    資訊來源: Facebook 貼文
+                </a>
+            </div>
+        </header>
+
+        <!-- 案例情境描述 -->
+        <section class="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mb-8">
+            <p class="text-base font-semibold text-blue-800">案例情境：</p>
+            <p class="text-sm text-gray-700 mt-2">高一某位學生因經常違反學校規定，例如違規使用手機，遭導師懲處並嚴厲要求他不可再犯。該生感到壓力很大，回家跟家長訴苦，家長無法諒解，認為老師針對他的孩子。家長到學校興師問罪，向主任反應認為老師對待他的孩子不公。</p>
+        </section>
+        
+        <!-- 三層式解析區塊 -->
+        <div class="space-y-6">
+
+            <!-- 第一層：依法合規的應對行動 -->
+            <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div id="layer1-header" class="flex items-center justify-between p-5 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700">第一層：依法合規的應對行動</h2>
+                    <span id="layer1-arrow" class="text-2xl text-gray-500 transition-transform duration-300 transform rotated">></span>
+                </div>
+                <div id="layer1-content" class="collapsible-content expanded p-5 pt-0 text-gray-700">
+                    <ul class="list-disc list-inside space-y-4 text-sm leading-relaxed mt-4">
+                        <li>
+                            <p class="font-semibold text-gray-800">手機使用的規範依據</p>
+                            <p>根據《高級中等以下學校學生攜帶行動載具到校管理原則(草案)》，學校應明定管理規範並經校務會議通過，規範包括管理方式、違規處置、學生申訴途徑等。因此，老師在處理學生違反手機規範時，必須依據該校的正式規範辦理，並讓學生有陳述意見的機會。</p>
+                        </li>
+                        <li>
+                            <p class="font-semibold text-gray-800">比例原則與尊重程序</p>
+                            <p>《學校訂定教師輔導與管教學生辦法注意事項》明定，管教應與違規情節相當，並採損害較小的措施。嚴厲的言詞警告本身不一定違法，但若帶有人身貶抑、羞辱意味，可能構成不當管教。必須避免讓家長或學生有「被針對」的印象，因此需有明確、可追溯的紀錄（如導師日誌、管教記錄表）。</p>
+                        </li>
+                        <li>
+                            <p class="font-semibold text-gray-800">與家長互動的法規精神</p>
+                            <p>學校有義務在家長反應時，溝通、協調並說明理由。此時老師可先提供具體紀錄與依據，讓主任與家長了解處理過程合法且合比例。</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第二層：SEL 與 EF 行為洞察 -->
+            <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div id="layer2-header" class="flex items-center justify-between p-5 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700">第二層：SEL 與 EF 行為洞察</h2>
+                    <span id="layer2-arrow" class="text-2xl text-gray-500 transition-transform duration-300 transform">></span>
+                </div>
+                <div id="layer2-content" class="collapsible-content p-5 pt-0 text-gray-700">
+                    <p class="text-sm leading-relaxed mt-4">對於高一生（15–16歲），常見的行為背景是：</p>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <p class="font-semibold text-gray-800">SEL缺口</p>
+                            <ul class="list-disc list-inside ml-4 text-sm leading-relaxed">
+                                <li>自我管理：難以克制手機使用的衝動，缺乏情境調整能力。</li>
+                                <li>社會覺察：未充分意識手機行為對教學秩序與同儕的影響。</li>
+                                <li>關係技巧：當感到被嚴厲批評時，容易產生「被針對」的防衛情緒。</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">EF缺口</p>
+                            <ul class="list-disc list-inside ml-4 text-sm leading-relaxed">
+                                <li>衝動抑制：遇到即時誘惑（訊息、通知）時無法延遲滿足。</li>
+                                <li>情緒調節：被批評時情緒上升，容易轉為怨懟。</li>
+                                <li>認知彈性：面對老師的規範，缺乏從他人角度理解規則價值的能力。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-sm leading-relaxed mt-4">在這種狀況下，學生回家後傾向以「老師針對我」的方式向家長陳述，是因為他需要情緒支持，而不是客觀還原事件。</p>
+                </div>
+            </div>
+            
+            <!-- 第三層：增能導向的實務步驟 -->
+            <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div id="layer3-header" class="flex items-center justify-between p-5 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700">第三層：增能導向的實務步驟</h2>
+                    <span id="layer3-arrow" class="text-2xl text-gray-500 transition-transform duration-300 transform">></span>
+                </div>
+                <div id="layer3-content" class="collapsible-content p-5 pt-0 text-gray-700">
+                    <ul class="list-disc list-inside space-y-4 text-sm leading-relaxed mt-4">
+                        <li>
+                            <p class="font-semibold text-gray-800">課堂與私下分離的溝通策略</p>
+                            <p>避免當眾嚴厲警告，改成課後一對一談話：「我知道手機對你很重要，也可能有正當用途，但上課時若頻繁使用，會影響你和同學的學習。我想和你一起找到一個方法，讓你能兼顧使用和遵守規定。」</p>
+                        </li>
+                        <li>
+                            <p class="font-semibold text-gray-800">結合 SEL/EF 的行為契約</p>
+                            <p>建立「行動載具使用約定表」：</p>
+                            <ul class="list-disc list-inside ml-4 text-sm leading-relaxed">
+                                <li>具體列出允許與禁止情境（例：下課、午休可用；上課全程收起）</li>
+                                <li>由學生自己提出執行策略（例如交給同學保管、關機放包包底層）</li>
+                                <li>設定正向回饋（連續三天達標，老師口頭表揚、記小功）</li>
+                            </ul>
+                            <!-- 可填寫的約定表範本 -->
+                            <div class="bg-gray-100 p-4 sm:p-6 mt-4 rounded-lg border-dashed border-2 border-gray-300 text-sm">
+                                <h3 class="font-bold text-base text-gray-800 mb-2">行動載具使用自我管理約定表</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="studentName" class="block text-gray-600">學生姓名：</label>
+                                        <input type="text" id="studentName" class="w-full border rounded-md p-2 mt-1 focus:ring-blue-500 focus:border-blue-500" placeholder="請輸入姓名">
+                                    </div>
+                                    <div>
+                                        <label for="studentClass" class="block text-gray-600">班級：</label>
+                                        <input type="text" id="studentClass" class="w-full border rounded-md p-2 mt-1 focus:ring-blue-500 focus:border-blue-500" placeholder="請輸入班級">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">目標行為</p>
+                                    <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
+                                        <li>上課期間手機保持關機並收納於指定位置。</li>
+                                        <li>下課、午休可在不影響他人情況下使用。</li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800 mb-1">我選擇的策略</p>
+                                    <ul class="space-y-1">
+                                        <li class="flex items-center"><input type="checkbox" class="mr-2 rounded text-blue-600 focus:ring-blue-500"><label>課前將手機交由同學或老師保管</label></li>
+                                        <li class="flex items-center"><input type="checkbox" class="mr-2 rounded text-blue-600 focus:ring-blue-500"><label>使用定時關機功能</label></li>
+                                        <li class="flex items-center"><input type="checkbox" class="mr-2 rounded text-blue-600 focus:ring-blue-500"><label>將手機放在包包最底層，避免隨手拿出</label></li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">檢核方式</p>
+                                    <p class="mt-1">老師每日檢查記錄，連續達成3天可獲得口頭表揚。</p>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                    <div><label class="block text-gray-600">學生簽名：</label><span class="block border-b border-gray-400 p-2 mt-1"></span></div>
+                                    <div><label class="block text-gray-600">導師簽名：</label><span class="block border-b border-gray-400 p-2 mt-1"></span></div>
+                                </div>
+                                <div class="mt-4"><label class="block text-gray-600">日期：</label><span class="block border-b border-gray-400 p-2 mt-1"></span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <p class="font-semibold text-gray-800">與家長的合作對話腳本</p>
+                            <p>當家長帶情緒來校時，可採「三明治溝通法」：</p>
+                            <ul class="list-disc list-inside ml-4 text-sm leading-relaxed">
+                                <li>肯定：「我知道您很關心孩子，這也是我們共同的目標。」</li>
+                                <li>說明：出示具體紀錄與校規依據，說明處理流程合法、合比例。</li>
+                                <li>合作：「我希望和您一起幫助孩子學會在適當場合使用手機，這樣也能減少他壓力。」</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <p class="font-semibold text-gray-800">後續追蹤</p>
+                            <ul class="list-disc list-inside ml-4 text-sm leading-relaxed">
+                                <li>每週與學生短談 2 分鐘，檢視約定執行情況</li>
+                                <li>家長端同步回報在家手機使用情況</li>
+                                <li>若持續改善，公開在班上正面表揚（強化自我效能感）</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 溫馨提醒按鈕 -->
+            <div class="text-center mt-8">
+                <button id="open-modal-btn" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-blue-600 transition-colors duration-200 transform hover:scale-105">
+                    點我看溫馨提醒
+                </button>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- 溫馨提醒模態框 (Modal) -->
+    <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 max-w-lg w-full transform transition-all duration-300 scale-95 opacity-0">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">溫馨提醒</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="prose max-w-none text-gray-700">
+                <p>若該生在多領域呈現衝動控制困難、情緒易激動等狀況，且持續影響學習與人際，這些行為模式與某些特殊需求（如 ADHD）特質相似。建議與輔導室或特教老師討論，做進一步觀察與支持。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript 處理折疊與展開邏輯
+        document.addEventListener('DOMContentLoaded', () => {
+            const collapsibleHeaders = document.querySelectorAll('[id$="-header"]');
+            const modal = document.getElementById('modal');
+            const openModalBtn = document.getElementById('open-modal-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            collapsibleHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = document.getElementById(header.id.replace('header', 'content'));
+                    const arrow = document.getElementById(header.id.replace('header', 'arrow'));
+
+                    if (content.classList.contains('expanded')) {
+                        content.classList.remove('expanded');
+                        arrow.classList.remove('rotated');
+                    } else {
+                        content.classList.add('expanded');
+                        arrow.classList.add('rotated');
+                    }
+                });
+            });
+
+            // 處理模態框開啟與關閉
+            openModalBtn.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.querySelector('div').classList.remove('scale-95', 'opacity-0');
+                    modal.querySelector('div').classList.add('scale-100', 'opacity-100');
+                }, 10);
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                modal.querySelector('div').classList.remove('scale-100', 'opacity-100');
+                modal.querySelector('div').classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            });
+
+            // 點擊模態框外部也關閉
+            modal.addEventListener('click', (e) => {
+                if (e.target.id === 'modal') {
+                    closeModalBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
