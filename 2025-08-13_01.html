@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEL 互動轉盤抽籤工具</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .wheel-container {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            margin: auto;
+        }
+        canvas {
+            border-radius: 50%;
+            transform: rotate(0deg);
+            transition: transform 6s cubic-bezier(0.2, 0.9, 0.4, 1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #dc2626; /* red triangle */
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl flex flex-col items-center space-y-8">
+        <h1 class="text-4xl font-extrabold text-gray-800 text-center">SEL 互動轉盤抽籤工具</h1>
+        
+        <!-- Wheel Section -->
+        <div class="flex flex-col md:flex-row items-center justify-center w-full gap-8">
+            <div class="wheel-container">
+                <canvas id="wheelCanvas" width="350" height="350"></canvas>
+                <div class="pointer"></div>
+            </div>
+            
+            <div class="flex flex-col items-center space-y-6 w-full md:w-1/2">
+                <div id="resultBox" class="bg-gray-200 text-gray-700 text-center text-xl font-semibold p-4 rounded-xl w-full h-24 flex items-center justify-center shadow-inner">
+                    點擊「開始旋轉」
+                </div>
+                <button id="spinButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
+                    開始旋轉
+                </button>
+            </div>
+        </div>
+        
+        <!-- Customization Section -->
+        <div class="bg-gray-50 p-6 rounded-xl w-full shadow-inner">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4 text-center">自訂您的選項</h2>
+            <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                <input type="text" id="optionInput" placeholder="輸入一個新的選項..." class="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="addOptionButton" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+                    新增選項
+                </button>
+            </div>
+            
+            <ul id="optionsList" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                <!-- Options will be populated here by JavaScript -->
+            </ul>
+
+            <button id="updateWheelButton" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md mt-4 transition-colors duration-200">
+                更新轉盤
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // 確保在所有 HTML 元素加載後才執行腳本
+        document.addEventListener('DOMContentLoaded', () => {
+            // 定義初始的 SEL 提示
+            let selOptions = [
+                '自我覺察：分享你最近感到自豪的一件事。',
+                '自我管理：當你生氣時，你會做什麼來讓自己平靜下來？',
+                '社會覺察：想想你欣賞的一個人，並說出一個你從他們身上學到的優點。',
+                '人際關係技巧：如何才能更好地傾聽別人的意見？',
+                '負責任的決策：如果你的朋友讓你做一件你知道不對的事情，你會怎麼做？',
+                '自我覺察：描述一下你最擅長的一件事情。',
+                '自我管理：分享一個你最近需要有耐心才能完成的例子。',
+                '社會覺察：說出一個你最近幫助別人的例子。',
+                '人際關係技巧：如何向朋友表達你的謝意？',
+                '負責任的決策：今天你想為自己或別人做一件好事是什麼？'
+            ];
+
+            // 獲取 HTML 元素
+            const canvas = document.getElementById('wheelCanvas');
+            const ctx = canvas.getContext('2d');
+            const spinButton = document.getElementById('spinButton');
+            const resultBox = document.getElementById('resultBox');
+            const optionInput = document.getElementById('optionInput');
+            const addOptionButton = document.getElementById('addOptionButton');
+            const optionsList = document.getElementById('optionsList');
+            const updateWheelButton = document.getElementById('updateWheelButton');
+
+            // 轉盤參數
+            const wheelRadius = canvas.width / 2;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const colors = ['#e53e3e', '#38a169', '#3182ce', '#dd6b20', '#6b46c1', '#d53f8c', '#d69e2e', '#4c51bf'];
+            let currentRotation = 0;
+            let spinning = false;
+
+            /**
+             * 根據當前選項繪製轉盤
+             */
+            function drawWheel() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const arcSize = (2 * Math.PI) / selOptions.length;
+
+                selOptions.forEach((option, index) => {
+                    const angle = index * arcSize;
+                    const color = colors[index % colors.length];
+
+                    ctx.beginPath();
+                    ctx.fillStyle = color;
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, wheelRadius, angle, angle + arcSize);
+                    ctx.fill();
+
+                    // 繪製文字
+                    ctx.save();
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate(angle + arcSize / 2);
+                    ctx.textAlign = 'right';
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '14px Inter, sans-serif';
+                    ctx.fillText(option, wheelRadius - 10, 0);
+                    ctx.restore();
+                });
+            }
+
+            /**
+             * 處理轉盤旋轉邏輯
+             */
+            function spinWheel() {
+                if (spinning) return;
+                spinning = true;
+                spinButton.disabled = true;
+                resultBox.textContent = '轉盤正在旋轉...';
+
+                // 隨機選擇一個獲勝選項
+                const winningIndex = Math.floor(Math.random() * selOptions.length);
+                const arcSize = (2 * Math.PI) / selOptions.length;
+                const winningAngle = (winningIndex * arcSize) + (arcSize / 2);
+
+                // 讓轉盤旋轉多圈以增加戲劇效果
+                const totalRotation = (currentRotation * (180 / Math.PI)) + 3600 + (360 - (winningAngle * (180 / Math.PI)) % 360);
+                
+                canvas.style.transition = 'transform 6s cubic-bezier(0.2, 0.9, 0.4, 1)';
+                canvas.style.transform = `rotate(${totalRotation}deg)`;
+                
+                // 儲存新的旋轉角度
+                currentRotation = totalRotation * (Math.PI / 180);
+
+                // 在動畫結束後顯示結果
+                setTimeout(() => {
+                    resultBox.textContent = `恭喜您！抽到的選項是：「${selOptions[winningIndex]}」`;
+                    spinButton.disabled = false;
+                    spinning = false;
+                    canvas.style.transition = 'none'; // 移除過渡效果以避免下次旋轉時的奇怪行為
+                }, 6000);
+            }
+
+            /**
+             * 根據當前選項列表更新轉盤
+             */
+            function updateWheel() {
+                if (selOptions.length === 0) {
+                    resultBox.textContent = '轉盤選項不能為空！';
+                    return;
+                }
+                drawWheel();
+                resultBox.textContent = '轉盤已更新！';
+            }
+
+            /**
+             * 繪製選項列表
+             */
+            function renderOptionsList() {
+                optionsList.innerHTML = '';
+                selOptions.forEach((option, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center bg-white p-3 rounded-lg shadow-sm';
+                    li.innerHTML = `
+                        <span class="text-gray-800 flex-grow pr-2">${option}</span>
+                        <button class="remove-btn bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-2 rounded-full transition-colors duration-200" data-index="${index}">移除</button>
+                    `;
+                    optionsList.appendChild(li);
+                });
+            }
+
+            // 事件監聽器
+            spinButton.addEventListener('click', spinWheel);
+
+            addOptionButton.addEventListener('click', () => {
+                const newOption = optionInput.value.trim();
+                if (newOption) {
+                    selOptions.push(newOption);
+                    optionInput.value = '';
+                    renderOptionsList();
+                }
+            });
+
+            optionsList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-btn')) {
+                    const index = parseInt(e.target.dataset.index);
+                    selOptions.splice(index, 1);
+                    renderOptionsList();
+                }
+            });
+
+            updateWheelButton.addEventListener('click', updateWheel);
+
+            // 首次加載時繪製轉盤和列表
+            drawWheel();
+            renderOptionsList();
+        });
+    </script>
+</body>
+</html>
