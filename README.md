@@ -32,7 +32,7 @@
 ### 正向管教 by 延選好學
 #### [正向管教教練GPT-高一學生違規案例三層式解析](https://ming823gihub.github.io/Webpages/2025-08-10_01.html)
 ###
-#### https://ming823gihub.github.io/Webpages/Browser_Tiler_self_contained_v1.html
+#### [Tiling Sandbox](https://ming823gihub.github.io/Webpages/Browser_Tiler_self_contained_v1.html)
 [SEL 互動轉盤抽籤工具](https://ming823gihub.github.io/Webpages/2025-08-13_01.html)
 
 [Gemini 教師應用互動指南 by 莊哲昀](https://ming823gihub.github.io/Webpages/2025-08-13_02.html)
