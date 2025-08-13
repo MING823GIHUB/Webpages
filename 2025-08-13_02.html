@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini 教師應用互動指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with a Touch of Teal -->
+    <!-- Application Structure Plan: A tab-based SPA design is chosen for optimal user navigation. The structure includes: 1) A 'Home' tab with a summary chart to provide an overview. 2) A 'Safety Rules' tab using interactive cards to make dense information on risks (Bias, Hallucination) and principles (Verification, Privacy) more digestible. 3) An 'Art of Prompting' tab with an interactive diagram for the 5 prompt rules and accordions for other techniques, facilitating focused learning. 4) A 'Practical Exercise' tab featuring a "Prompt Builder" to transform passive knowledge into active skill application. This task-oriented, non-linear structure allows teachers to explore topics based on their immediate needs, enhancing usability and engagement. -->
+    <!-- Visualization & Content Choices: Report Info: Workshop themes -> Goal: Overview -> Viz: Donut Chart (Chart.js) -> Interaction: None, static display -> Justification: Quickly visualizes the two core concepts. Report Info: 4 Safety Topics -> Goal: Inform/Warn -> Viz: 2x2 Grid of Cards (HTML/Tailwind) -> Interaction: Click-to-reveal details -> Justification: Breaks down complex info into manageable chunks. Report Info: 5 Prompting Rules -> Goal: Explain a framework -> Viz: Interactive Step Diagram (HTML/Tailwind) -> Interaction: Hover to see examples -> Justification: Visually organizes the process and provides contextual info on demand. Report Info: Prompt creation process -> Goal: Engage/Apply -> Viz: Interactive Form/Builder (HTML/JS) -> Interaction: User input, click to generate & copy -> Justification: Provides a hands-on tool to solidify learning, which is more effective than passive reading. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto; height: 300px; max-height: 300px; }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { color: #0d9488; border-bottom-color: #0d9488; }
+        .nav-link:not(.active) { border-bottom-color: transparent; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .prompt-rule-card { transition: all 0.3s ease; }
+        .prompt-rule-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-800">
+
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-700">Gemini 教師應用互動指南</h1>
+            <p class="mt-2 text-slate-600">將研習筆記轉化為您的 AI 教學超能力</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-slate-200 mb-8">
+            <a href="#home" class="nav-link active text-lg font-medium py-3 px-4 md:px-6 border-b-2" data-tab="home">首頁</a>
+            <a href="#safety" class="nav-link text-lg font-medium py-3 px-4 md:px-6 border-b-2" data-tab="safety">安全守則</a>
+            <a href="#prompting" class="nav-link text-lg font-medium py-3 px-4 md:px-6 border-b-2" data-tab="prompting">指令藝術</a>
+            <a href="#practice" class="nav-link text-lg font-medium py-3 px-4 md:px-6 border-b-2" data-tab="practice">實戰演練</a>
+        </nav>
+
+        <main>
+            <!-- Home Section -->
+            <section id="home" class="content-section active">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-teal-600 mb-4 text-center">歡迎，聰明的 AI 使用者！</h2>
+                    <p class="text-slate-700 mb-6 text-center leading-relaxed">本指南旨在幫助教育工作者掌握有效且負責任地使用 Gemini 的兩大核心：<span class="font-bold text-teal-700">「安全與責任」</span>和<span class="font-bold text-teal-700">「指令的藝術」</span>。透過互動式的探索，您將學會如何避開 AI 的陷阱，並精準下達指令，讓 AI 成為您教學與行政工作上的得力助手。</p>
+                    <div class="chart-container">
+                        <canvas id="summaryChart"></canvas>
+                    </div>
+                     <p class="text-slate-600 mt-4 text-center text-sm">兩大核心同等重要，構成負責任使用的基礎。</p>
+                </div>
+            </section>
+
+            <!-- Safety Section -->
+            <section id="safety" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-teal-600 mb-2 text-center">Ⅰ. 安全與責任</h2>
+                    <p class="text-slate-600 mb-8 text-center">善用 AI 的前提是了解其限制與風險。點擊下方卡片，深入了解四大關鍵守則。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="safety-card p-5 border border-slate-200 rounded-lg cursor-pointer hover:bg-teal-50" data-content="safety-bias">
+                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-3">🧐</span>警惕 AI 的偏見</h3>
+                            <p class="text-slate-600">AI 可能複製或放大社會偏見，需引導學生批判性看待其內容。</p>
+                        </div>
+                        <div class="safety-card p-5 border border-slate-200 rounded-lg cursor-pointer hover:bg-teal-50" data-content="safety-hallucination">
+                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-3">👻</span>識破 AI 的幻覺</h3>
+                            <p class="text-slate-600">AI 可能「一本正經地胡說八道」，永遠要對其產出抱持懷疑。</p>
+                        </div>
+                        <div class="safety-card p-5 border border-slate-200 rounded-lg cursor-pointer hover:bg-teal-50" data-content="safety-verification">
+                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-3">✅</span>驗證 AI 的內容</h3>
+                            <p class="text-slate-600">遵循準確性、適當性、切合性 (3A) 原則，並善用查證功能。</p>
+                        </div>
+                        <div class="safety-card p-5 border border-slate-200 rounded-lg cursor-pointer hover:bg-teal-50" data-content="safety-privacy">
+                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-3">🔒</span>保護個人隱私</h3>
+                            <p class="text-slate-600">切勿上傳個資或機密，務必將資料去識別化、最小化。</p>
+                        </div>
+                    </div>
+                    <div id="safety-details" class="mt-6 p-6 bg-stone-100 rounded-lg hidden"></div>
+                </div>
+            </section>
+
+            <!-- Prompting Section -->
+            <section id="prompting" class="content-section">
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-teal-600 mb-2 text-center">Ⅱ. 精通 Gemini：下達完美指令的藝術</h2>
+                    <p class="text-slate-600 mb-8 text-center">一個好的提示語 (Prompt) 是發揮 AI 潛力的關鍵。探索撰寫有效提示語的黃金原則與進階技巧。</p>
+                    
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold mb-4 text-center text-slate-700">撰寫有效提示語的五大黃金原則</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
+                            <div class="prompt-rule-card bg-teal-50 p-4 rounded-lg border border-teal-200">
+                                <div class="text-3xl mb-2">👤</div><h4 class="font-bold">賦予角色</h4><p class="text-sm text-slate-600">例：國小五年級老師</p>
+                            </div>
+                            <div class="prompt-rule-card bg-teal-50 p-4 rounded-lg border border-teal-200">
+                                <div class="text-3xl mb-2">🎯</div><h4 class="font-bold">指派任務</h4><p class="text-sm text-slate-600">例：設計小測驗</p>
+                            </div>
+                            <div class="prompt-rule-card bg-teal-50 p-4 rounded-lg border border-teal-200">
+                                <div class="text-3xl mb-2">👨‍👩‍👧‍👦</div><h4 class="font-bold">設定受眾</h4><p class="text-sm text-slate-600">例：適合12-13歲學生</p>
+                            </div>
+                            <div class="prompt-rule-card bg-teal-50 p-4 rounded-lg border border-teal-200">
+                                <div class="text-3xl mb-2">📜</div><h4 class="font-bold">提供背景/限制</h4><p class="text-sm text-slate-600">例：參考方文山風格</p>
+                            </div>
+                            <div class="prompt-rule-card bg-teal-50 p-4 rounded-lg border border-teal-200">
+                                <div class="text-3xl mb-2">📋</div><h4 class="font-bold">要求格式</h4><p class="text-sm text-slate-600">例：用表格呈現</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-center text-slate-700">與 AI 的協作技巧</h3>
+                        <div class="space-y-3">
+                            <div class="accordion-item border border-slate-200 rounded-lg">
+                                <button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-stone-100">
+                                    迭代與對話：與 AI 的協作過程
+                                    <span class="transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4 text-slate-600">
+                                    <p>完美的提示語往往需要多次修改。您可以：</p>
+                                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                                        <li><strong>逐步優化：</strong>從一個簡單的指令開始，根據 AI 的回覆，不斷增加細節，反覆對話來調整。</li>
+                                        <li><strong>反問 AI：</strong>當您不確定時，可以直接問 AI：「為了讓回覆更貼近我的需求，我還需要提供哪些額外資訊給你？」</li>
+                                        <li><strong>腦力激盪：</strong>請 AI「跳脫框架思考」或「提供五個創新的點子」，利用它的產出作為靈感的墊腳石。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                             <div class="accordion-item border border-slate-200 rounded-lg">
+                                <button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-stone-100">
+                                    終極技巧：讓 Gemini 幫你寫提示語！
+                                    <span class="transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4 text-slate-600">
+                                    <p>Google Gemini 有一個強大的隱藏功能，可以幫您將簡單的想法擴充成一個結構完整的複雜提示語。</p>
+                                    <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                        <li>在 Gemini 介面左側選單點擊「<strong>探索 Gems</strong>」。</li>
+                                        <li>點擊「<strong>建立新的 Gem</strong>」。</li>
+                                        <li>在「指令」欄位中，用幾句話簡單描述你想做的事情。</li>
+                                        <li>點擊輸入框下方那支帶有星號的筆形圖示（<strong>使用 Gemini 重新撰寫指令</strong>）。</li>
+                                        <li>稍待片刻，Gemini 就會為您生成一段專業又詳細的提示語！</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Practice Section -->
+            <section id="practice" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-teal-600 mb-2 text-center">Ⅲ. 實戰演練：提示語產生器</h2>
+                    <p class="text-slate-600 mb-8 text-center">學會了原則，就來動手試試看！根據五大黃金原則，建構您自己的完美提示語。</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="p-role" class="block font-semibold mb-1">👤 1. 賦予角色 (Role)</label>
+                            <input type="text" id="p-role" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="例：一位經驗豐富的國小五年級國語文老師">
+                        </div>
+                        <div>
+                            <label for="p-task" class="block font-semibold mb-1">🎯 2. 指派任務 (Task)</label>
+                            <textarea id="p-task" rows="3" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="例：為「台灣地形」這個單元設計一份包含 5 道選擇題與 3 道填充題的小測驗。"></textarea>
+                        </div>
+                        <div>
+                            <label for="p-audience" class="block font-semibold mb-1">👨‍👩‍👧‍👦 3. 設定受眾 (Audience)</label>
+                            <input type="text" id="p-audience" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="例：測驗的難度應適合 12-13 歲的學生。">
+                        </div>
+                        <div>
+                            <label for="p-context" class="block font-semibold mb-1">📜 4. 提供背景/限制 (Context/Constraints)</label>
+                            <input type="text" id="p-context" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="例：題目需涵蓋台灣的五大山脈與三大平原。">
+                        </div>
+                        <div>
+                            <label for="p-format" class="block font-semibold mb-1">📋 5. 要求格式 (Format)</label>
+                            <input type="text" id="p-format" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="例：請用 Markdown 表格呈現題目與答案。">
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-6">
+                        <button id="generate-prompt" class="bg-teal-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-teal-700 transition-colors">產生提示語</button>
+                    </div>
+
+                    <div id="result-container" class="mt-8 hidden">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">為您產生的專業提示語：</h3>
+                        <div class="relative bg-slate-800 text-white p-4 rounded-lg font-mono text-sm">
+                            <button id="copy-prompt" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs py-1 px-2 rounded">複製</button>
+                            <pre><code id="generated-prompt-text"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 py-4 border-t border-slate-200">
+            <p class="text-sm text-slate-500">
+                內容靈感與資料來源：<a href="https://www.facebook.com/share/p/1C3JCSmkfd/" target="_blank" rel="noopener noreferrer" class="text-teal-600 hover:underline">莊哲昀 (AJ) 老師的研習筆記</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            const safetyCards = document.querySelectorAll('.safety-card');
+            const safetyDetailsContainer = document.getElementById('safety-details');
+            const safetyContent = {
+                'safety-bias': {
+                    title: '🧐 警惕 AI 的偏見 (Bias)',
+                    content: 'AI 的學習資料源自於充滿人類觀點的網路世界，因此其生成內容可能無意中複製或放大既有的社會偏見。<br><br><strong>教師的角色：</strong>應引導學生批判性地看待 AI 生成的內容，辨識其中可能存在的刻板印象或不公平論述，培養學生的媒體素養與包容性。'
+                },
+                'safety-hallucination': {
+                    title: '� 識破 AI 的幻覺 (Hallucination)',
+                    content: 'AI 為了讓回答看起來完整流暢，有時會「一本正經地胡說八道」，捏造出不存在的事實、數據或引用來源。<br><br><strong>核心心態：</strong>AI 不是真理，它只是個工具。永遠要對其產出抱持懷疑與查證的態度。<br><strong>常見幻覺類型：</strong>捏造事實、邏輯錯誤、偽造出處。'
+                },
+                'safety-verification': {
+                    title: '✅ 驗證 AI 內容的三大法則 (3A 原則)',
+                    content: '在評估 AI 回覆時，可以參考以下三個標準：<br><ul class="list-disc pl-5 mt-2"><li><strong>準確性 (Accuracy)：</strong>內容是否存在事實錯誤？論點是否有根據？</li><li><strong>適當性 (Appropriateness)：</strong>用詞是否符合專業領域的標準？內容是否適合目標對象？</li><li><strong>切合性 (Alignment)：</strong>回覆是否精準地回應了你的問題？</li></ul><br><strong>實用工具：</strong>善用 Gemini 內建的「查證回覆內容」功能。'
+                },
+                'safety-privacy': {
+                    title: '🔒 保護隱私，安全互動',
+                    content: '與 AI 互動時，切記不要上傳任何包含個人隱私或機密的資料。<br><br><strong>處理原則：</strong><ul class="list-disc pl-5 mt-2"><li><strong>去識別化：</strong>將姓名等個資替換為代號。</li><li><strong>最小化原則：</strong>只提供完成任務所必需的最少量資訊。</li><li><strong>確認安全環境：</strong>除非學校確認 AI 服務在安全封閉的環境下運作，否則應抱持最高警覺。</li></ul>'
+                }
+            };
+            
+            const accordionItems = document.querySelectorAll('.accordion-item');
+
+            const generateBtn = document.getElementById('generate-prompt');
+            const copyBtn = document.getElementById('copy-prompt');
+            const resultContainer = document.getElementById('result-container');
+            const promptTextElement = document.getElementById('generated-prompt-text');
+
+            function switchTab(tabId) {
+                tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabId);
+                });
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === tabId);
+                });
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = e.target.dataset.tab;
+                    window.location.hash = tabId;
+                    switchTab(tabId);
+                });
+            });
+
+            safetyCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const contentKey = e.currentTarget.dataset.content;
+                    const details = safetyContent[contentKey];
+                    safetyDetailsContainer.innerHTML = `<h3 class="text-xl font-bold mb-2">${details.title}</h3><p class="text-slate-700 leading-relaxed">${details.content}</p>`;
+                    safetyDetailsContainer.classList.remove('hidden');
+                });
+            });
+
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = header.querySelector('span');
+
+                header.addEventListener('click', () => {
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+                    
+                    accordionItems.forEach(i => {
+                        i.querySelector('.accordion-content').style.maxHeight = '0px';
+                        i.querySelector('.accordion-header span').style.transform = 'rotate(0deg)';
+                    });
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            generateBtn.addEventListener('click', () => {
+                const role = document.getElementById('p-role').value.trim();
+                const task = document.getElementById('p-task').value.trim();
+                const audience = document.getElementById('p-audience').value.trim();
+                const context = document.getElementById('p-context').value.trim();
+                const format = document.getElementById('p-format').value.trim();
+
+                let fullPrompt = "";
+                if (role) fullPrompt += `你是一位${role}。\n\n`;
+                if (task) fullPrompt += `你的任務是：${task}\n\n`;
+                if (audience) fullPrompt += `內容的目標對象是${audience}。\n\n`;
+                if (context) fullPrompt += `請注意以下限制與背景：${context}\n\n`;
+                if (format) fullPrompt += `請依照以下格式輸出：${format}`;
+                
+                if (fullPrompt) {
+                    promptTextElement.textContent = fullPrompt.trim();
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    resultContainer.classList.add('hidden');
+                }
+            });
+
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = promptTextElement.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyBtn.textContent = '已複製!';
+                    setTimeout(() => {
+                        copyBtn.textContent = '複製';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('無法複製文字: ', err);
+                });
+            });
+
+            const ctx = document.getElementById('summaryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['安全與責任', '指令的藝術'],
+                    datasets: [{
+                        label: '核心概念',
+                        data: [50, 50],
+                        backgroundColor: [
+                            'rgba(20, 184, 166, 0.7)',
+                            'rgba(15, 118, 110, 0.8)'
+                        ],
+                        borderColor: [
+                             '#ffffff'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    family: "'Noto Sans TC', sans-serif"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const initialTab = window.location.hash.replace('#', '') || 'home';
+            switchTab(initialTab);
+        });
+    </script>
+</body>
+</html>
+�
