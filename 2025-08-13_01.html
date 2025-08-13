@@ -35,6 +35,60 @@
             border-top: 30px solid #dc2626; /* red triangle */
             z-index: 10;
         }
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 20;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .result-text-container {
+            min-height: 50px; /* Prevent layout shift when text appears */
+        }
+        
+        /* New animation for the modal title to fade out */
+        .modal-title.fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* New animation for the result text to fade in and scale up */
+        .result-text {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s ease-in, transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .result-text.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center p-4">
@@ -78,6 +132,19 @@
         </div>
     </div>
     
+    <!-- Modal for displaying result -->
+    <div id="resultModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle" class="text-3xl font-bold text-gray-800 mb-4 transition-opacity duration-300">抽籤結果</h3>
+            <div class="result-text-container">
+                <p id="modalResultText" class="result-text text-2xl font-semibold text-gray-700"></p>
+            </div>
+            <button id="closeModalButton" class="mt-6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full transition-colors duration-200">
+                關閉
+            </button>
+        </div>
+    </div>
+
     <script>
         // 確保在所有 HTML 元素加載後才執行腳本
         document.addEventListener('DOMContentLoaded', () => {
@@ -104,6 +171,10 @@
             const addOptionButton = document.getElementById('addOptionButton');
             const optionsList = document.getElementById('optionsList');
             const updateWheelButton = document.getElementById('updateWheelButton');
+            const resultModal = document.getElementById('resultModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalResultText = document.getElementById('modalResultText');
+            const closeModalButton = document.getElementById('closeModalButton');
 
             // 轉盤參數
             const wheelRadius = canvas.width / 2;
@@ -114,7 +185,7 @@
             let spinning = false;
 
             /**
-             * 根據當前選項繪製轉盤
+             * 根據當前選項繪製轉盤。
              */
             function drawWheel() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -129,27 +200,23 @@
                     ctx.moveTo(centerX, centerY);
                     ctx.arc(centerX, centerY, wheelRadius, angle, angle + arcSize);
                     ctx.fill();
-
-                    // 繪製文字
-                    ctx.save();
-                    ctx.translate(centerX, centerY);
-                    ctx.rotate(angle + arcSize / 2);
-                    ctx.textAlign = 'right';
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '14px Inter, sans-serif';
-                    ctx.fillText(option, wheelRadius - 10, 0);
-                    ctx.restore();
                 });
             }
 
             /**
-             * 處理轉盤旋轉邏輯
+             * 處理轉盤旋轉邏輯，並在結束後顯示結果。
              */
             function spinWheel() {
                 if (spinning) return;
                 spinning = true;
                 spinButton.disabled = true;
                 resultBox.textContent = '轉盤正在旋轉...';
+                
+                // Hide modal and text if it's visible from previous spin
+                resultModal.classList.remove('visible');
+                modalResultText.classList.remove('visible');
+                modalTitle.classList.remove('fade-out'); // Remove fade-out class for the next spin
+                modalTitle.style.opacity = '1'; // Reset opacity for the next spin
 
                 // 隨機選擇一個獲勝選項
                 const winningIndex = Math.floor(Math.random() * selOptions.length);
@@ -167,10 +234,28 @@
 
                 // 在動畫結束後顯示結果
                 setTimeout(() => {
-                    resultBox.textContent = `恭喜您！抽到的選項是：「${selOptions[winningIndex]}」`;
-                    spinButton.disabled = false;
-                    spinning = false;
-                    canvas.style.transition = 'none'; // 移除過渡效果以避免下次旋轉時的奇怪行為
+                    const winningOption = selOptions[winningIndex];
+                    
+                    // Show modal and title first
+                    resultBox.textContent = '抽到的選項是...';
+                    modalResultText.textContent = ''; // Clear result text
+                    modalResultText.classList.remove('visible');
+                    resultModal.classList.add('visible');
+                    
+                    // After a short delay, fade out the title and fade in the actual result
+                    setTimeout(() => {
+                        modalTitle.classList.add('fade-out'); // Start title fade-out
+                        
+                        // After title fades out, fade in the result text
+                        setTimeout(() => {
+                            modalResultText.textContent = `「${winningOption}」`;
+                            modalResultText.classList.add('visible'); // Fade in the result
+                            resultBox.textContent = `抽到的選項是：「${winningOption}」`;
+                            spinButton.disabled = false;
+                            spinning = false;
+                            canvas.style.transition = 'none'; // 移除過渡效果以避免下次旋轉時的奇怪行為
+                        }, 500); // Duration of the title fade-out
+                    }, 1000); // Wait for 1 second before starting the title fade-out
                 }, 6000);
             }
 
@@ -201,10 +286,10 @@
                     optionsList.appendChild(li);
                 });
             }
-
+            
             // 事件監聽器
             spinButton.addEventListener('click', spinWheel);
-
+            
             addOptionButton.addEventListener('click', () => {
                 const newOption = optionInput.value.trim();
                 if (newOption) {
@@ -213,7 +298,7 @@
                     renderOptionsList();
                 }
             });
-
+            
             optionsList.addEventListener('click', (e) => {
                 if (e.target.classList.contains('remove-btn')) {
                     const index = parseInt(e.target.dataset.index);
@@ -221,8 +306,13 @@
                     renderOptionsList();
                 }
             });
-
+            
             updateWheelButton.addEventListener('click', updateWheel);
+            
+            // Close the modal when the button is clicked
+            closeModalButton.addEventListener('click', () => {
+                resultModal.classList.remove('visible');
+            });
 
             // 首次加載時繪製轉盤和列表
             drawWheel();
