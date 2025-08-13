@@ -34,3 +34,4 @@
 ###
 #### https://ming823gihub.github.io/Webpages/Browser_Tiler_self_contained_v1.html
 [SEL 互動轉盤抽籤工具](https://ming823gihub.github.io/Webpages/2025-08-13_01.html)
+[Gemini 教師應用互動指南 by 莊哲昀](https://ming823gihub.github.io/Webpages/2025-08-13_02.html)
