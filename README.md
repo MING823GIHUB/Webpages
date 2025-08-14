@@ -40,3 +40,5 @@
 [Gemini 教師應用課程精華 by 吳奇](https://ming823gihub.github.io/Webpages/2025-08-13_03.html)
 
 [AI 學術研究工具互動指南](https://ming823gihub.github.io/Webpages/2025-08-14_01.html)
+
+[AI 學術研究與論文撰寫｜互動資訊圖表](https://ming823gihub.github.io/Webpages/2025-08-14_02.html)
