@@ -38,3 +38,5 @@
 [Gemini 教師應用互動指南 by 莊哲昀](https://ming823gihub.github.io/Webpages/2025-08-13_02.html)
 
 [Gemini 教師應用課程精華 by 吳奇](https://ming823gihub.github.io/Webpages/2025-08-13_03.html)
+
+[AI 學術研究工具互動指南](https://ming823gihub.github.io/Webpages/2025-08-14_01.html)
