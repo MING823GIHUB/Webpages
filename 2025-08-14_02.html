@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 學術研究與論文撰寫｜互動資訊圖表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: A top-down narrative SPA. It starts with an introductory header, followed by a "big picture" bar chart visualizing tool distribution. The core is a 2x2 grid of the four research stages, acting as primary navigation. Clicking a stage scrolls to its detailed section. Each section presents tools as cards. This structure guides the user from a general overview to specific details in a logical, scroll-based flow, making it feel like a classic infographic but with interactive depth. -->
+    <!-- Visualization & Content Choices: 1. Research Process -> HTML/CSS Flowchart -> Goal: Organize -> A simple, non-interactive visual guide at the top to set the context. 2. Tool Distribution -> Bar Chart (Chart.js/Canvas) -> Goal: Compare -> Provides a quick, quantitative overview of the tool landscape. 3. Key Stats -> Large Numbers (HTML/CSS) -> Goal: Inform -> Highlights the total number of tools featured. 4. Tool Details -> Styled Cards (HTML/CSS) -> Goal: Organize/Inform -> Presents tool information in a structured, digestible format. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F0F7FF; /* Lightest Blue */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-arrow {
+            color: #00A6ED;
+        }
+        .stage-card {
+            background-color: white;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .stage-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 166, 237, 0.1);
+            border-color: #00A6ED;
+        }
+        .section-title {
+            border-left: 5px solid #00A6ED;
+            padding-left: 1rem;
+        }
+        .tool-link {
+            font-weight: 700;
+            color: #0074A6;
+            transition: color 0.2s;
+        }
+        .tool-link:hover {
+            color: #00A6ED;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+
+        <header class="text-center my-8 md:my-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#003B73]" style="letter-spacing: 2px;">AI 論文撰寫高效流程</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">從文獻搜尋到最終校對，本指南將引導您運用最適合的 AI 工具，將研究效率提升至全新層次。</p>
+        </header>
+
+        <section class="my-16">
+            <h2 class="text-3xl font-bold text-center text-[#003B73] mb-8">研究流程一覽</h2>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                <div class="p-4 bg-white rounded-lg shadow-md">
+                    <p class="text-xl font-bold text-[#00A6ED]">1. 文獻搜尋</p>
+                </div>
+                <div class="text-2xl md:text-4xl font-bold flow-arrow transform md:rotate-0 rotate-90">→</div>
+                <div class="p-4 bg-white rounded-lg shadow-md">
+                    <p class="text-xl font-bold text-[#00A6ED]">2. 組織規劃</p>
+                </div>
+                <div class="text-2xl md:text-4xl font-bold flow-arrow transform md:rotate-0 rotate-90">→</div>
+                <div class="p-4 bg-white rounded-lg shadow-md">
+                    <p class="text-xl font-bold text-[#00A6ED]">3. 內容撰寫</p>
+                </div>
+                <div class="text-2xl md:text-4xl font-bold flow-arrow transform md:rotate-0 rotate-90">→</div>
+                <div class="p-4 bg-white rounded-lg shadow-md">
+                    <p class="text-xl font-bold text-[#00A6ED]">4. 編輯校對</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-16 p-8 bg-white rounded-xl shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div class="md:col-span-1 text-center md:text-left">
+                    <h2 class="text-3xl font-bold text-[#003B73] mb-4">AI 工具生態系</h2>
+                    <p class="text-gray-600 mb-6">本指南精選了各階段的強大 AI 工具，下圖顯示了它們在不同任務中的分佈情況，其中以「內容撰寫」的輔助工具最為豐富。</p>
+                    <div class="text-5xl font-bold text-[#00A6ED]">19+</div>
+                    <p class="font-semibold text-gray-500">精選工具</p>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="chart-container">
+                        <canvas id="toolsDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="stages" class="my-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <a href="#stage1" class="stage-card p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-4">🔍</div>
+                    <h3 class="text-2xl font-bold text-[#003B73]">第一階段：文獻搜尋與總結</h3>
+                    <p class="mt-2 text-gray-600">快速、精準地在學術海洋中定位高價值文獻，並迅速吸收核心論點。</p>
+                </a>
+                <a href="#stage2" class="stage-card p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-4">🗺️</div>
+                    <h3 class="text-2xl font-bold text-[#003B73]">第二階段：組織與規劃內容</h3>
+                    <p class="mt-2 text-gray-600">建構清晰的論文架構，並透過視覺化工具理清研究脈絡，確保論點全面。</p>
+                </a>
+                <a href="#stage3" class="stage-card p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-4">✍️</div>
+                    <h3 class="text-2xl font-bold text-[#003B73]">第三階段：內容撰寫與生成</h3>
+                    <p class="mt-2 text-gray-600">從草稿生成到語句潤飾，讓 AI 成為你的寫作加速器，突破靈感瓶頸。</p>
+                </a>
+                <a href="#stage4" class="stage-card p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h3 class="text-2xl font-bold text-[#003B73]">第四階段：編輯、校對與引用</h3>
+                    <p class="mt-2 text-gray-600">確保論文品質的最後一道防線，從文法風格到引用管理，滴水不漏。</p>
+                </a>
+            </div>
+        </div>
+
+        <section id="stage1" class="my-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-6 section-title">第一階段：文獻搜尋與總結</h2>
+            <div class="space-y-6">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">智慧搜尋</h4>
+                    <p class="mt-2 text-gray-600">使用 <a href="https://www.semanticscholar.org/" target="_blank" rel="noopener noreferrer" class="tool-link">Semantic Scholar</a> 或 <a href="https://elicit.com/" target="_blank" rel="noopener noreferrer" class="tool-link">Elicit</a>，透過語意搜尋快速找到最相關的論文，它們能理解你的研究問題，而不僅是關鍵字。</p>
+                </div>
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">快速總結</h4>
+                    <p class="mt-2 text-gray-600">利用 <a href="https://scispace.com/" target="_blank" rel="noopener noreferrer" class="tool-link">SciSpace</a> 或 <a href="https://consensus.app/" target="_blank" rel="noopener noreferrer" class="tool-link">Consensus</a> 上傳 PDF，以聊天方式提問，迅速獲取論文的關鍵發現、方法與侷限性。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage2" class="my-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-6 section-title">第二階段：組織與規劃內容</h2>
+            <div class="space-y-6">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">大綱生成</h4>
+                    <p class="mt-2 text-gray-600">讓 <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" class="tool-link">ChatGPT</a> 或 <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="tool-link">Claude</a> 成為你的腦力激盪夥伴，輸入主題即可獲得初步的論文大綱與結構建議。</p>
+                </div>
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">視覺化脈絡</h4>
+                    <p class="mt-2 text-gray-600">透過 <a href="https://www.litmaps.com/" target="_blank" rel="noopener noreferrer" class="tool-link">Litmaps</a> 或 <a href="https://www.researchrabbit.ai/" target="_blank" rel="noopener noreferrer" class="tool-link">Research Rabbit</a> 將文獻轉化為互動圖表，清晰看見論文間的連結，確保論點連貫。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage3" class="my-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-6 section-title">第三階段：內容撰寫與生成</h2>
+            <div class="space-y-6">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">草稿輔助</h4>
+                    <p class="mt-2 text-gray-600">使用 <a href="https://paperpal.com/" target="_blank" rel="noopener noreferrer" class="tool-link">PaperPal</a> 或 <a href="https://jenni.ai/" target="_blank" rel="noopener noreferrer" class="tool-link">Jenni.ai</a>，根據你的摘要和關鍵字生成段落草稿，並自動插入引用。</p>
+                </div>
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">語句潤飾</h4>
+                    <p class="mt-2 text-gray-600">對於非母語寫作者，<a href="https://quillbot.com/" target="_blank" rel="noopener noreferrer" class="tool-link">QuillBot</a> 或 <a href="https://wordvice.ai/" target="_blank" rel="noopener noreferrer" class="tool-link">Wordvice.ai</a> 能改寫句子，提升清晰度與流暢性，避免重複。</p>
+                </div>
+                 <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">擴展資料來源</h4>
+                    <p class="mt-2 text-gray-600"><a href="https://elephas.app/" target="_blank" rel="noopener noreferrer" class="tool-link">Elephas</a> 等工具能快速總結 YouTube 影片或網頁內容，讓您輕鬆將多元資料融入論文，擴大研究範圍。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage4" class="my-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-6 section-title">第四階段：編輯、校對與引用</h2>
+            <div class="space-y-6">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">文法與風格校對</h4>
+                    <p class="mt-2 text-gray-600"><a href="https://www.grammarly.com/" target="_blank" rel="noopener noreferrer" class="tool-link">Grammarly</a> 或 <a href="https://www.trinka.ai/" target="_blank" rel="noopener noreferrer" class="tool-link">Trinka</a> 不僅檢查文法拼字，更能提供學術風格建議，提升句子多樣性。</p>
+                </div>
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-[#00A6ED]">自動化引用管理</h4>
+                    <p class="mt-2 text-gray-600"><a href="https://www.zotero.org/" target="_blank" rel="noopener noreferrer" class="tool-link">Zotero</a> 或 <a href="https://scite.ai/" target="_blank" rel="noopener noreferrer" class="tool-link">Scite.ai</a> 能自動生成 APA、MLA 等格式的引用清單。Scite.ai 更能顯示引用上下文，幫助評估來源可信度。</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-16 pt-8 border-t border-gray-300 text-center text-gray-500">
+            <h3 class="text-xl font-bold text-[#003B73] mb-4">⚠️ 使用 AI 的學術倫理提醒</h3>
+            <div class="max-w-3xl mx-auto space-y-2">
+                <p><strong>誠實揭露：</strong>遵循您所屬機構的規定，在適當之處註明 AI 的輔助。</p>
+                <p><strong>事實查核：</strong>AI 可能會產生「幻覺」（虛構事實），務必驗證所有由 AI 生成的內容。</p>
+                <p><strong>人類為主：</strong>AI 是輔助工具，最終的學術判斷與創新思維仍需由您主導。</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('toolsDistributionChart').getContext('2d');
+            
+            const data = {
+                labels: ['文獻搜尋與總結', ['組織與', '規劃內容'], ['內容撰寫', '與生成'], ['編輯、校對', '與引用']],
+                datasets: [{
+                    label: '工具數量',
+                    data: [4, 4, 5, 4],
+                    backgroundColor: '#00A6ED',
+                    borderColor: '#0074A6',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    barThickness: 30,
+                }]
+            };
+
+            const options = {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#003B73',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#FFFFFF',
+                        padding: 10,
+                        cornerRadius: 5,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join('');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e0e0e0',
+                            borderColor: '#c0c0c0'
+                        },
+                        ticks: {
+                            color: '#333',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#003B73',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: options
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
