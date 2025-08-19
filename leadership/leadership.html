@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式領導力風格探索工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: 本應用程式採用單頁儀表板結構。頂部是標題和簡介，下方左側為主要導航區，以網格卡片形式呈現所有領導風格，供使用者點擊選擇。右側為內容顯示區，會根據使用者的選擇動態更新，顯示所選風格的詳細描述、代表人物及特點。最下方是一個互動式雷達圖，用於視覺化比較不同風格在五個核心維度（控制度、協作度、靈活性、發展導向、啟發性）上的表現。此結構旨在引導使用者主動探索，透過點擊互動即時獲得反饋，並利用視覺化圖表加深對複雜概念的理解與比較，從而提升資訊吸收效率和使用者參與感。 -->
+    <!-- Visualization & Content Choices: 報告資訊：10種領導風格及其文字描述。目標：組織、呈現並提供比較。視覺化/呈現方式：1. 使用網格卡片佈局作為互動式選擇器，每張卡片代表一種風格。2. 動態文字區塊顯示選定風格的詳細資訊。3. 使用Chart.js的雷達圖來視覺化比較各風格的抽象特質。4. 新增圖像，透過JavaScript動態更新。互動：點擊卡片會更新文字區塊、雷達圖和人物圖片。理由：此設計將靜態列表轉化為探索性介面。雷達圖能有效地將定性的文字描述量化為多維度的視覺比較，讓使用者能快速洞察各風格間的細微差異，這是純文字無法達成的。新增圖片讓介面更具吸引力與個人化，加深使用者對內容的連結感。使用的庫/方法：HTML/Tailwind CSS、JavaScript、Chart.js。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF8;
+            color: #4F4A45;
+        }
+        .active-style-button {
+            background-color: #E4A767 !important;
+            color: #FFFFFF !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .style-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .style-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 500px;
+        }
+        .object-fit-cover {
+          object-fit: cover;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#6C5F5B]">領導力風格矩陣</h1>
+            <p class="mt-2 text-lg text-[#8A817C]">一個基於歷史領袖的互動式探索工具</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <nav class="lg:col-span-1">
+                <div class="bg-white/60 p-6 rounded-2xl shadow-sm border border-gray-200/80">
+                    <h2 class="text-xl font-bold mb-4 text-[#6C5F5B]">選擇一種風格</h2>
+                    <p class="text-sm text-gray-600 mb-6">點擊下方的按鈕，右側將會顯示對應的領導力風格詳細資訊與分析圖表。</p>
+                    <div id="style-selector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-3">
+                    </div>
+                </div>
+            </nav>
+
+            <section class="lg:col-span-2">
+                <div id="details-view" class="bg-white/60 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200/80 min-h-[300px]">
+                    <div class="text-center mb-6">
+                        <img id="style-image" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-fit-cover mb-4 shadow-md mx-auto" alt="">
+                        <h3 id="style-title" class="text-2xl font-bold text-[#E4A767]"></h3>
+                        <p id="style-leader" class="text-lg font-medium text-[#6C5F5B]"></p>
+                    </div>
+                    <p id="style-description" class="mb-4 text-gray-700"></p>
+                    <ul id="style-points" class="list-disc list-inside space-y-2 text-gray-700">
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+
+        <section class="mt-8 bg-white/60 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200/80">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-[#6C5F5B]">風格比較分析</h2>
+                <p class="mt-2 text-gray-600">此雷達圖分析了不同領導風格在五個關鍵維度上的傾向。<br class="hidden sm:block">這有助於您快速理解每種風格的核心特質與差異。</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="leadershipChart"></canvas>
+            </div>
+        </section>
+
+        <footer class="mt-12 text-center">
+            <div class="bg-gray-800/80 text-white p-8 rounded-2xl shadow-inner">
+                <p class="text-xl italic">"如果你的行動啟發他人夢想更多，學習更多，做更多，成為更多，你就是一個領導者。"</p>
+                <p class="mt-4 font-semibold text-lg">— 約翰·昆西·亞當斯 (John Quincy Adams)</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const leadershipData = [
+            {
+                id: 'visionary',
+                name: '願景型',
+                leader: '喬治·華盛頓',
+                imageUrl: '01.jpg',
+                description: '啟發人們對未來有共同的願景，並引領變革。',
+                points: ['推動創新', '改變組織文化'],
+                scores: { control: 3, collaboration: 4, flexibility: 4, development: 4, inspiration: 5 }
+            },
+            {
+                id: 'transactional',
+                name: '交易型',
+                leader: '湯瑪斯·傑佛遜',
+                imageUrl: '02.jpg',
+                description: '透過獎勵和懲罰來激勵，專注於績效。',
+                points: ['促進效率', '闡明目標'],
+                scores: { control: 4, collaboration: 2, flexibility: 2, development: 2, inspiration: 2 }
+            },
+            {
+                id: 'transformational',
+                name: '轉型型',
+                leader: '約翰·甘迺迪',
+                imageUrl: '03.jpg',
+                description: '透過啟發、智力刺激和個人考量來改變文化。',
+                points: ['增強動力和士氣', '培養變革和成長的環境'],
+                scores: { control: 3, collaboration: 4, flexibility: 5, development: 5, inspiration: 5 }
+            },
+            {
+                id: 'servant',
+                name: '僕人型',
+                leader: '馬丁·路德·金',
+                imageUrl: '04.jpg',
+                description: '將社群的成長和福祉置於首位，滿足他人的需求。',
+                points: ['建立強大的社群紐帶', '增強團隊福祉和滿足感'],
+                scores: { control: 2, collaboration: 5, flexibility: 4, development: 5, inspiration: 4 }
+            },
+            {
+                id: 'autocratic',
+                name: '專制型',
+                leader: '德懷特·艾森豪',
+                imageUrl: '05.jpg',
+                description: '單方面做出決策，維持嚴格的控制。',
+                points: ['提供清晰、即時的決策', '維護秩序和紀律'],
+                scores: { control: 5, collaboration: 1, flexibility: 1, development: 1, inspiration: 2 }
+            },
+            {
+                id: 'democratic',
+                name: '民主型',
+                leader: '亞伯拉罕·林肯',
+                imageUrl: '06.jpg',
+                description: '鼓勵參與和共享決策。',
+                points: ['鼓勵團隊投入和參與', '培養合作文化'],
+                scores: { control: 2, collaboration: 5, flexibility: 3, development: 4, inspiration: 3 }
+            },
+            {
+                id: 'laissez-faire',
+                name: '放任型',
+                leader: '亞當·斯密',
+                imageUrl: '07.jpg',
+                description: '提供最少的指導，允許團體自主。',
+                points: ['賦予團隊自主權和創造力', '透過自由支持個人成長'],
+                scores: { control: 1, collaboration: 3, flexibility: 5, development: 4, inspiration: 2 }
+            },
+            {
+                id: 'situational',
+                name: '情境型',
+                leader: '羅莎·帕克斯',
+                imageUrl: '08.jpg',
+                description: '根據情境或追隨者的需求來調整風格。',
+                points: ['調整領導力以滿足團隊的需求', '有效管理團隊成熟度和能力的變動水平'],
+                scores: { control: 3, collaboration: 4, flexibility: 5, development: 4, inspiration: 3 }
+            },
+            {
+                id: 'charismatic',
+                name: '魅力型',
+                leader: '隆納·雷根',
+                imageUrl: '09.jpg',
+                description: '憑藉個人魅力和情感連結來啟發人們。',
+                points: ['啟發並激勵團隊', '建立強大的情感紐帶'],
+                scores: { control: 3, collaboration: 3, flexibility: 3, development: 3, inspiration: 5 }
+            },
+            {
+                id: 'coaching',
+                name: '教練型',
+                leader: '文斯·隆巴迪',
+                imageUrl: '10.jpg',
+                description: '專注於透過指導和回饋來發展團隊成員。',
+                points: ['專注於個人發展', '鼓勵持續學習和進步'],
+                scores: { control: 2, collaboration: 4, flexibility: 4, development: 5, inspiration: 4 }
+            }
+        ];
+
+        const selectorContainer = document.getElementById('style-selector');
+        const styleImage = document.getElementById('style-image');
+        const styleTitle = document.getElementById('style-title');
+        const styleLeader = document.getElementById('style-leader');
+        const styleDescription = document.getElementById('style-description');
+        const stylePoints = document.getElementById('style-points');
+        
+        let currentActiveButton = null;
+
+        function updateDetails(styleId) {
+            const style = leadershipData.find(s => s.id === styleId);
+            if (!style) return;
+
+            // Update image source and alt text if available
+            if (style.imageUrl) {
+                styleImage.src = style.imageUrl;
+                styleImage.alt = `${style.leader} 的肖像`;
+                // Add object-position to "crop" the image
+                styleImage.style.objectPosition = 'center'; 
+            } else {
+                styleImage.src = '';
+                styleImage.alt = '';
+                styleImage.style.objectPosition = '';
+            }
+
+            styleTitle.textContent = `${style.name}領導者`;
+            styleLeader.textContent = `代表人物：${style.leader}`;
+            styleDescription.textContent = style.description;
+            
+            stylePoints.innerHTML = '';
+            style.points.forEach(point => {
+                const li = document.createElement('li');
+                li.textContent = point;
+                stylePoints.appendChild(li);
+            });
+
+            const targetButton = document.querySelector(`button[data-id='${styleId}']`);
+            if (currentActiveButton) {
+                currentActiveButton.classList.remove('active-style-button');
+            }
+            if (targetButton) {
+                targetButton.classList.add('active-style-button');
+                currentActiveButton = targetButton;
+            }
+        }
+        
+        function updateChart(styleId) {
+            const style = leadershipData.find(s => s.id === styleId);
+            if (!style) return;
+            
+            const scores = Object.values(style.scores);
+            leadershipChart.data.datasets[0].data = scores;
+            leadershipChart.data.datasets[0].label = `${style.name}風格`;
+            leadershipChart.update();
+        }
+
+        leadershipData.forEach(style => {
+            const button = document.createElement('button');
+            button.textContent = style.name;
+            button.dataset.id = style.id;
+            button.className = 'style-button w-full text-sm font-medium py-2 px-3 rounded-lg bg-white hover:bg-[#E4A767]/80 hover:text-white shadow-sm border border-gray-200/80';
+            button.addEventListener('click', () => {
+                updateDetails(style.id);
+                updateChart(style.id);
+            });
+            selectorContainer.appendChild(button);
+        });
+
+        const ctx = document.getElementById('leadershipChart').getContext('2d');
+        const leadershipChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['控制度', '協作度', '靈活性', '發展導向', '啟發性'],
+                datasets: [{
+                    label: '',
+                    data: [],
+                    backgroundColor: 'rgba(228, 167, 103, 0.2)',
+                    borderColor: 'rgba(228, 167, 103, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(228, 167, 103, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(228, 167, 103, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(79, 74, 69, 0.2)'
+                        },
+                        grid: {
+                            color: 'rgba(79, 74, 69, 0.2)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 14,
+                                family: "'Noto Sans TC', sans-serif"
+                            },
+                            color: '#4F4A45'
+                        },
+                        ticks: {
+                            backdropColor: 'rgba(253, 251, 248, 0.7)',
+                            color: '#6C5F5B',
+                            stepSize: 1,
+                            font: {
+                                family: "'Noto Sans TC', sans-serif"
+                            }
+                        },
+                        min: 0,
+                        max: 5
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                           font: {
+                                size: 16,
+                                family: "'Noto Sans TC', sans-serif"
+                           },
+                           color: '#4F4A45'
+                        }
+                    }
+                }
+            }
+        });
+
+        window.onload = () => {
+            const initialStyle = leadershipData[0].id;
+            updateDetails(initialStyle);
+            updateChart(initialStyle);
+        };
+    </script>
+</body>
+</html>
