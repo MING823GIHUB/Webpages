@@ -42,3 +42,5 @@
 [AI 學術研究工具互動指南](https://ming823gihub.github.io/Webpages/2025-08-14_01.html)
 
 [AI 學術研究與論文撰寫｜互動資訊圖表](https://ming823gihub.github.io/Webpages/2025-08-14_02.html)
+
+[互動式領導力風格探索](https://ming823gihub.github.io/Webpages/leadership/leadership.html)
